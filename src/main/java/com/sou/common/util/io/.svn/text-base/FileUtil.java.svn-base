@@ -1,0 +1,1398 @@
+/**
+ * 文件名：FileUtil.java *
+ * 日期：2011-1-17
+ * Copyright 途牛科技有限公司 2011
+ * 版权所有
+ */
+package com.tuniu.util.io;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import com.tuniu.util.lang.StringUtil;
+
+/**
+ * <p>
+ * 文件操作工具类.封装了对文件和目录操作的一些功能.
+ * </p>
+ * 
+ * @author yuxiumin
+ */
+
+public class FileUtil {
+
+	private static final long ONE_GB = FileUtil.ONE_KB * FileUtil.ONE_MB;
+	private static final long ONE_KB = 1024;
+	private static final long ONE_MB = FileUtil.ONE_KB * FileUtil.ONE_KB;
+
+	/**
+	 * 创建新文件方法
+	 * 
+	 * @param filename 文件名
+	 * @return 创建成功后返回<code>true</code>
+	 * @throws IOException
+	 * @since 1.0
+	 */
+	public static boolean createFile(String filename) throws IOException {
+		File f = new File(filename);
+
+		if (!f.createNewFile()) {
+			throw new IOException("Create file " + filename + " failed");
+		}
+		return true;
+	}
+
+	/**
+	 * 重命名文件
+	 * 
+	 * @param src 源文件
+	 * @param dest 目标文件
+	 * @return 文件创建成功后返回<code>true</code>
+	 * @throws IOException
+	 * @since 1.0
+	 */
+	public static boolean renameFile(String src, String dest)
+			throws IOException {
+		File oldf = new File(src);
+		File newf = new File(dest);
+		if (!oldf.renameTo(newf)) {
+			throw new IOException("Rename file " + src + " to " + dest
+					+ " failed");
+		}
+		return true;
+	}
+
+	/**
+	 * <p>
+	 * 获取输入的<code>long</code>类型文件字节数到人们习惯的字符串表达形式.
+	 * </p>
+	 * <p>
+	 * 例如:<code>1024L</code>将被转换成<code>1KB</code>.
+	 * </p>
+	 * 
+	 * @param size 输入的<code>long</code>类型文件字节数
+	 * @return 输入文件字节数的人们习惯的字符串表达形式
+	 */
+	public static String byteCountToDisplaySize(long size) {
+		String displaySize;
+		if (size / FileUtil.ONE_GB > 0) {
+			displaySize = String.valueOf(size / FileUtil.ONE_GB) + " GB";
+		} else if (size / FileUtil.ONE_MB > 0) {
+			displaySize = String.valueOf(size / FileUtil.ONE_MB) + " MB";
+		} else if (size / FileUtil.ONE_KB > 0) {
+			displaySize = String.valueOf(size / FileUtil.ONE_KB) + " KB";
+		} else {
+			displaySize = String.valueOf(size) + " bytes";
+		}
+		return displaySize;
+	}
+
+	/**
+	 * <p>
+	 * 清空给定的目录,但是不删除它.
+	 * </p>
+	 * 
+	 * @param directory 被清空的目录
+	 * @throws IOException 当清空操作不成功时抛出
+	 */
+	public static void cleanDirectory(File directory) throws IOException {
+		if (!directory.exists()) {
+			String message = directory + " does not exist";
+			throw new IllegalArgumentException(message);
+		}
+
+		if (!directory.isDirectory()) {
+			String message = directory + " is not a directory";
+			throw new IllegalArgumentException(message);
+		}
+
+		File[] files = directory.listFiles();
+		if (files == null) {
+			throw new IOException("Failed to list contents of " + directory);
+		}
+
+		IOException exception = null;
+		for (File file : files) {
+			try {
+				FileUtil.forceDelete(file);
+			} catch (IOException ioe) {
+				exception = ioe;
+			}
+		}
+
+		if (null != exception) {
+			throw exception;
+		}
+	}
+
+	/**
+	 * <p>
+	 * 复制整个源目录到目标目录,复制过程将保持文件日期不变.
+	 * </p>
+	 * <p>
+	 * 此方法复制源目录及其下的所有子目录和文件到指定目标位置.当指定目标目录不存在时,此方法创建目标目录.如果目标目录存在,此方法将合并源目录和目标目录
+	 * ,合并过程中源目录具有优先权.
+	 * </p>
+	 * 
+	 * @param srcDir 被复制的源目录,不能为<code>null</code>
+	 * @param destDir 目标目录,不能为<code>null</code>
+	 * @throws NullPointerException 当源目录或者目标目录为<code>null</code>时抛出.
+	 * @throws IOException 当源目录或者目标目录无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyDirectory(File srcDir, File destDir)
+			throws IOException {
+		FileUtil.copyDirectory(srcDir, destDir, true);
+	}
+
+	/**
+	 * <p>
+	 * 复制整个源目录到新位置.
+	 * </p>
+	 * <p>
+	 * 此方法复制源目录的内容到目标目录中.当指定目标目录不存在时,此方法创建目标目录.如果目标目录存在,此方法将合并源目录和目标目录,
+	 * 合并过程中源目录具有优先权.
+	 * </p>
+	 * 
+	 * @param srcDir 被复制的源目录,不能为<code>null</code>
+	 * @param destDir 目标目录,不能为<code>null</code>
+	 * @param preserveFileDate 当复制后的文件日期与源文件日期一致时返回<code>true</code>
+	 * @throws NullPointerException 当源目录或者目标目录为<code>null</code>时抛出
+	 * @throws IOException 当源目录或者目标目录无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyDirectory(File srcDir, File destDir,
+			boolean preserveFileDate) throws IOException {
+		FileUtil.copyDirectory(srcDir, destDir, null, preserveFileDate);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void copyDirectory(File srcDir, File destDir,
+			FileFilter filter, boolean preserveFileDate) throws IOException {
+		if (srcDir == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destDir == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (srcDir.exists() == false) {
+			throw new FileNotFoundException("Source '" + srcDir
+					+ "' does not exist");
+		}
+		if (srcDir.isDirectory() == false) {
+			throw new IOException("Source '" + srcDir
+					+ "' exists but is not a directory");
+		}
+		if (srcDir.getCanonicalPath().equals(destDir.getCanonicalPath())) {
+			throw new IOException("Source '" + srcDir + "' and destination '"
+					+ destDir + "' are the same");
+		}
+
+		List exclusionList = null;
+		if (destDir.getCanonicalPath().startsWith(srcDir.getCanonicalPath())) {
+			File[] srcFiles = filter == null ? srcDir.listFiles() : srcDir
+					.listFiles(filter);
+			if ((srcFiles != null) && (srcFiles.length > 0)) {
+				exclusionList = new ArrayList(srcFiles.length);
+				for (File srcFile : srcFiles) {
+					File copiedFile = new File(destDir, srcFile.getName());
+					exclusionList.add(copiedFile.getCanonicalPath());
+				}
+			}
+		}
+		FileUtil.doCopyDirectory(srcDir, destDir, filter, preserveFileDate,
+				exclusionList);
+	}
+
+	/**
+	 * <p>
+	 * 复制给定源目录到目标目录中,复制过程将保持文件日期不变.
+	 * </p>
+	 * <p>
+	 * 此方法复制源目录及其所有内容到目标目录中,保持同样的名称.当目标目录不存在时将创建目标目录.当目标目录存在时,此方法将合并源目录和目标目录,
+	 * 合并过程中源目录具有优先权.
+	 * </p>
+	 * 
+	 * @param srcDir 被复制的源目录,不能为<code>null</code>.
+	 * @param destDir 目标目录,不能为<code>null</code>.
+	 * @throws NullPointerException 当源目录为<code>null</code>时抛出.
+	 * @throws IOException 当源目录或者目标目录无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyDirectoryToDirectory(File srcDir, File destDir)
+			throws IOException {
+		if (srcDir == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (srcDir.exists() && (srcDir.isDirectory() == false)) {
+			throw new IllegalArgumentException("Source '" + destDir
+					+ "' is not a directory");
+		}
+		if (destDir == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (destDir.exists() && (destDir.isDirectory() == false)) {
+			throw new IllegalArgumentException("Destination '" + destDir
+					+ "' is not a directory");
+		}
+		FileUtil.copyDirectory(srcDir, new File(destDir, srcDir.getName()),
+				true);
+	}
+
+	/**
+	 * <p>
+	 * 复制给定的源文件到新的文件位置,复制过程将保持文件日期不变.
+	 * </p>
+	 * <p>
+	 * 此方法复制指定源文件的内容到指定目标文件中.如果目标文件所在目录不存在,则创建此目录.如果目标文件存在,此方法将覆盖目标文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被复制的源文件,不能为<code>null</code>
+	 * @param destFile 目标新文件,不能为<code>null</code>
+	 * @throws NullPointerException 当源文件为<code>null</code>时抛出
+	 * @throws IOException 当源文件或者目标文件无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyFile(File srcFile, File destFile) throws IOException {
+		FileUtil.copyFile(srcFile, destFile, true);
+	}
+
+	/**
+	 * <p>
+	 * 复制给定的源文件到新的位置,复制过程可以选择选择源文件日期是否改变.
+	 * </p>
+	 * <p>
+	 * 此方法复制指定源文件中的内容到指定目标文件中.当目标文件所在目录不存在时,此方法将创建目标目录.当目标文件存在时,此方法将覆盖目标文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被复制的源文件,不能为<code>null</code>
+	 * @param destFile 目标新文件,不能为<code>null</code>
+	 * @param preserveFileDate 当复制后的文件日期与源文件日期一致时返回<code>true</code>
+	 * @throws NullPointerException 当源文件为<code>null</code>时抛出
+	 * @throws IOException 当源文件或者目标文件无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyFile(File srcFile, File destFile,
+			boolean preserveFileDate) throws IOException {
+		if (srcFile == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destFile == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (srcFile.exists() == false) {
+			throw new FileNotFoundException("Source '" + srcFile
+					+ "' does not exist");
+		}
+		if (srcFile.isDirectory()) {
+			throw new IOException("Source '" + srcFile
+					+ "' exists but is a directory");
+		}
+		// if (srcFile.getCanonicalPath().equals(destFile.getCanonicalPath())) {
+		// throw new IOException("Source '" + srcFile + "' and destination '"
+		// + destFile + "' are the same");
+		// }
+		if ((destFile.getParentFile() != null)
+				&& (destFile.getParentFile().exists() == false)) {
+			if (destFile.getParentFile().mkdirs() == false) {
+				throw new IOException("Destination '" + destFile
+						+ "' directory cannot be created");
+			}
+		}
+		if (destFile.exists() && (destFile.canWrite() == false)) {
+			throw new IOException("Destination '" + destFile
+					+ "' exists but is read-only");
+		}
+		FileUtil.doCopyFile(srcFile, destFile, preserveFileDate);
+	}
+
+	/**
+	 * <p>
+	 * 复制给定的源文件到目标目录中,复制过程将保持源文件日期不变.
+	 * </p>
+	 * <p>
+	 * 此方法复制指定源文件的内容到目标目录的同名文件中.如果目标目录不存在,方法会创建此目录.如果目标目录中已经存在给定文件,此方法会覆盖此文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被复制的源文件,不能为<code>null</code>
+	 * @param destDir 目标目录,不能为<code>null</code>
+	 * @throws NullPointerException 当源文件为<code>null</code>时抛出
+	 * @throws IOException 当源文件或者目标文件无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyFileToDirectory(File srcFile, File destDir)
+			throws IOException {
+		FileUtil.copyFileToDirectory(srcFile, destDir, true);
+	}
+
+	/**
+	 * <p>
+	 * 复制给定源文件到目标目录中,复制过程可以选择选择源文件日期是否改变.
+	 * </p>
+	 * <p>
+	 * 此方法复制给定源文件的内容到目标目录的同名文件中.如果目标目录不存在,方法会创建此目录.如果目标目录中已经存在给定文件,此方法会覆盖此文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被复制的源文件,不能为<code>null</code>
+	 * @param destDir 目标目录,不能为<code>null</code>
+	 * @param preserveFileDate 当复制后的文件日期与源文件日期一致时返回<code>true</code>
+	 * @throws NullPointerException 当源文件为<code>null</code>时抛出
+	 * @throws IOException 当源文件或者目标目录无效时抛出
+	 * @throws IOException 当复制过程中发生IO错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyFileToDirectory(File srcFile, File destDir,
+			boolean preserveFileDate) throws IOException {
+		if (destDir == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (destDir.exists() && (destDir.isDirectory() == false)) {
+			throw new IllegalArgumentException("Destination '" + destDir
+					+ "' is not a directory");
+		}
+		FileUtil.copyFile(srcFile, new File(destDir, srcFile.getName()),
+				preserveFileDate);
+	}
+
+	/**
+	 * 复制给定的源文件到目标目录中,复制过程将保持源文件日期不变.
+	 * <p>
+	 * 复制过程中源文件名称将变更为给定的目标文件名称, 如果给定的目标文件名称为空, 则默认使用原文件名称
+	 * </p>
+	 * <p>
+	 * 此方法复制指定源文件的内容到目标目录的同名文件中.如果目标目录不存在,方法会创建此目录.如果目标目录中已经存在给定文件,此方法会覆盖此文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被复制的源文件,不能为<code>null</code>
+	 * @param destFileName 目标文件名称
+	 * @param destDir 目标目录,不能为<code>null</code>
+	 * @throws NullPointerException 当源文件为<code>null</code>时抛出
+	 * @throws IOException 当源文件或者目标文件无效时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyFileToDirectory(File srcFile, String destFileName,
+			File destDir) throws IOException {
+		FileUtil.copyFileToDirectory(srcFile, destFileName, destDir, true);
+	}
+
+	/**
+	 * 复制给定源文件到目标目录中,复制过程可以选择选择源文件日期是否改变.
+	 * <p>
+	 * 复制过程中源文件名称将变更为给定的目标文件名称, 如果给定的目标文件名称为空, 则默认使用原文件名称
+	 * </p>
+	 * <p>
+	 * 此方法复制给定源文件的内容到目标目录的同名文件中.如果目标目录不存在,方法会创建此目录.如果目标目录中已经存在给定文件,此方法会覆盖此文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被复制的源文件,不能为<code>null</code>
+	 * @param destFileName 目标文件名称
+	 * @param destDir 目标目录,不能为<code>null</code>
+	 * @param preserveFileDate 当复制后的文件日期与源文件日期一致时返回<code>true</code>
+	 * @throws NullPointerException 当源文件为<code>null</code>时抛出
+	 * @throws IOException 当源文件或者目标目录无效时抛出
+	 * @throws IOException 当复制过程中发生IO错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyFileToDirectory(File srcFile, String destFileName,
+			File destDir, boolean preserveFileDate) throws IOException {
+		if (destDir == null) {
+			throw new NullPointerException("DestDirectory must not be null");
+		}
+		if (destDir.exists() && (destDir.isDirectory() == false)) {
+			throw new IllegalArgumentException("Destination '" + destDir
+					+ "' is not a directory");
+		}
+		if (StringUtil.isEmpty(destFileName)) {
+			FileUtil.copyFile(srcFile, new File(destDir, srcFile.getName()),
+					preserveFileDate);
+		} else {
+			FileUtil.copyFile(srcFile, new File(destDir, destFileName),
+					preserveFileDate);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 从<code>URL source</code>复制字节到目标文件中
+	 * </p>
+	 * <p>
+	 * 当目标文件不存在时,方法将会创建目标文件.当目标文件已经存在时,方法将会覆盖目标文件
+	 * </p>
+	 * 
+	 * @param source 被复制字节的<code>URL source</code>, 不能为<code>null</code>
+	 * @param destination 被写入字节的目标文件, 不能为<code>null</code>
+	 * @throws IOException 当<code>URL source</code>不能被打开时抛出
+	 * @throws IOException 当目标文件为目录时抛出
+	 * @throws IOException 当目标文件不能被正确创建时抛出
+	 * @throws IOException 当目标文件不能被正确覆盖时抛出
+	 * @throws IOException 当复制过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void copyURLToFile(URL source, File destination)
+			throws IOException {
+		InputStream input = source.openStream();
+		try {
+			FileOutputStream output = FileUtil.openOutputStream(destination);
+			try {
+				IOUtil.copy(input, output);
+			} finally {
+				IOUtil.closeQuietly(output);
+			}
+		} finally {
+			IOUtil.closeQuietly(input);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 递归删除给定目录.
+	 * </p>
+	 * 
+	 * @param directory 待删除的给定目录
+	 * @throws IOException 删除不成功时抛出
+	 * @since 1.0
+	 */
+	public static void deleteDirectory(File directory) throws IOException {
+		if (!directory.exists()) {
+			return;
+		}
+		FileUtil.cleanDirectory(directory);
+		if (!directory.delete()) {
+			String message = "Unable to delete directory " + directory + ".";
+			throw new IOException(message);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 删除给定文件,如果给定的<code>File</code>为目录,则删除此目录及其所有子目录.
+	 * </p>
+	 * <p>
+	 * 此方法当删除不成功时不会抛出异常,删除成功时返回<code>true</code>,删除不成功时返回<code>false</code>.
+	 * </p>
+	 * <p>
+	 * 此方法与<code>File.delete()</code>方法的区别在于:
+	 * <ul>
+	 * <li>当给定的<code>File</code>为目录时,此方法将删除此目录及其所有子目录;而
+	 * <code>File.delete()</code>方法目录必须为空才能删除.</li>
+	 * <li>此方法当删除不成功时不会抛出异常,而<code>File.delete()</code>方法删除不成功时会抛出异常.</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param file 被删除的文件或目录,可以为<code>null</code>
+	 * @return 当文件或者目录被成功删除时返回<code>true</code>,否则返回<code>false</code>
+	 * @since 1.0
+	 */
+	public static boolean deleteQuietly(File file) {
+		if (file == null) {
+			return false;
+		}
+		try {
+			if (file.isDirectory()) {
+				FileUtil.cleanDirectory(file);
+			}
+		} catch (Exception e) {
+			// Ignore
+		}
+		try {
+			return file.delete();
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void doCopyDirectory(File srcDir, File destDir,
+			FileFilter filter, boolean preserveFileDate, List exclusionList)
+			throws IOException {
+		if (destDir.exists()) {
+			if (destDir.isDirectory() == false) {
+				throw new IOException("Destination '" + destDir
+						+ "' exists but is not a directory");
+			}
+		} else {
+			if (destDir.mkdirs() == false) {
+				throw new IOException("Destination '" + destDir
+						+ "' directory cannot be created");
+			}
+			if (preserveFileDate) {
+				destDir.setLastModified(srcDir.lastModified());
+			}
+		}
+		if (destDir.canWrite() == false) {
+			throw new IOException("Destination '" + destDir
+					+ "' cannot be written to");
+		}
+
+		File[] files = filter == null ? srcDir.listFiles() : srcDir
+				.listFiles(filter);
+		if (files == null) {
+			throw new IOException("Failed to list contents of " + srcDir);
+		}
+		for (int i = 0; i < files.length; i++) {
+			File copiedFile = new File(destDir, files[i].getName());
+			if ((exclusionList == null)
+					|| !exclusionList.contains(files[i].getCanonicalPath())) {
+				if (files[i].isDirectory()) {
+					FileUtil.doCopyDirectory(files[i], copiedFile, filter,
+							preserveFileDate, exclusionList);
+				} else {
+					FileUtil.doCopyFile(files[i], copiedFile, preserveFileDate);
+				}
+			}
+		}
+	}
+
+	private static void doCopyFile(File srcFile, File destFile,
+			boolean preserveFileDate) throws IOException {
+		if (destFile.exists() && destFile.isDirectory()) {
+			throw new IOException("Destination '" + destFile
+					+ "' exists but is a directory");
+		}
+
+		FileInputStream input = new FileInputStream(srcFile);
+		try {
+			FileOutputStream output = new FileOutputStream(destFile);
+			try {
+				IOUtil.copy(input, output);
+			} finally {
+				IOUtil.closeQuietly(output);
+			}
+		} finally {
+			IOUtil.closeQuietly(input);
+		}
+
+		if (srcFile.length() != destFile.length()) {
+			throw new IOException("Failed to copy full contents from '"
+					+ srcFile + "' to '" + destFile + "'");
+		}
+		if (preserveFileDate) {
+			destFile.setLastModified(srcFile.lastModified());
+		}
+	}
+
+	/**
+	 * <p>
+	 * 删除文件.如果文件目录,则删除此目录及其下所有子目录.
+	 * </p>
+	 * 
+	 * @param file 被删除的文件或目录,不能为<code>null</code>.
+	 * @throws NullPointerException 当目录为<code>null</code>时抛出.
+	 * @throws FileNotFoundException 当文件不存在时抛出.
+	 * @throws IOException 当删除不成功时抛出.
+	 * @since 1.0
+	 */
+	public static void forceDelete(File file) throws IOException {
+		if (file.isDirectory()) {
+			FileUtil.deleteDirectory(file);
+		} else {
+			boolean filePresent = file.exists();
+			if (!file.delete()) {
+				if (!filePresent) {
+					throw new FileNotFoundException("File does not exist: "
+							+ file);
+				}
+				String message = "Unable to delete file: " + file;
+				throw new IOException(message);
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 创建目录,包含任何需要但是不存在的父目录.如果目录不能被创建或者已经存在指定名称的目录,将抛出异常.
+	 * </p>
+	 * 
+	 * @param directory 被创建的目录,不能为<code>null</code>.
+	 * @throws NullPointerException 当<code>directory</code>为<code>null</code>
+	 *             时抛出.
+	 * @throws IOException 当创建目录失败时抛出.
+	 * @since 1.0
+	 */
+	public static void forceMkdir(File directory) throws IOException {
+		if (directory.exists()) {
+			if (directory.isFile()) {
+				String message = "File " + directory + " exists and is "
+						+ "not a directory. Unable to create directory.";
+				throw new IOException(message);
+			}
+		} else {
+			if (!directory.mkdirs()) {
+				String message = "Unable to create directory " + directory;
+				throw new IOException(message);
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 测试输入文件日期是否比给定日期新.
+	 * </p>
+	 * 
+	 * @param file 输入文件,不能为<code>null</code>
+	 * @param date 被比较的日期,不能为<code>null</code>
+	 * @return 当输入文件存在并且比参与比较的日期新的时候返回<code>true</code>
+	 * @throws IllegalArgumentException if 当输入文件为<code>null</code>的时候抛出
+	 * @throws IllegalArgumentException if 当参与比较的日期为<code>null</code>的时候抛出
+	 * @since 1.0
+	 */
+	public static boolean isFileNewer(File file, Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("No specified date");
+		}
+		return FileUtil.isFileNewer(file, date.getTime());
+	}
+
+	/**
+	 * <p>
+	 * 测试指定的源文件(<code>file</code>)日期是否比引用文件(<code>reference</code>)日期新.
+	 * </p>
+	 * 
+	 * @param file 被比较的源文件,不能为<code>null</code>
+	 * @param reference 被比较的引用文件,不能为<code>null</code>
+	 * @return true 当源文件(<code>file</code>)存在并且比引用文件(<code>reference</code>
+	 *         )新的时候返回<code>true</code>
+	 * @throws IllegalArgumentException 当源文件为<code>null</code>时抛出
+	 * @throws IllegalArgumentException 当引用文件(<code>reference</code>)为
+	 *             <code>null</code>或者不存在时抛出
+	 * @since 1.0
+	 */
+	public static boolean isFileNewer(File file, File reference) {
+		if (reference == null) {
+			throw new IllegalArgumentException("No specified reference file");
+		}
+		if (!reference.exists()) {
+			throw new IllegalArgumentException("The reference file '" + file
+					+ "' doesn't exist");
+		}
+		return FileUtil.isFileNewer(file, reference.lastModified());
+	}
+
+	/**
+	 * <p>
+	 * 测试输入文件日期是否比给定时间新.
+	 * </p>
+	 * 
+	 * @param file 输入文件,不能为<code>null</code>
+	 * @param timeMillis 参与比较的时间毫秒数,从<code>1970-01-01 00:00:00</code>开始计算
+	 * @return 当输入文件存在并且比参与比较的时间新的时候返回<code>true</code>
+	 * @throws IllegalArgumentException 当输入文件为<code>null</code>的时候抛出
+	 * @since 1.0
+	 */
+	public static boolean isFileNewer(File file, long timeMillis) {
+		if (file == null) {
+			throw new IllegalArgumentException("No specified file");
+		}
+		if (!file.exists()) {
+			return false;
+		}
+		return file.lastModified() > timeMillis;
+	}
+
+	/**
+	 * <p>
+	 * 测试输入文件日期是否比给定日期旧.
+	 * </p>
+	 * 
+	 * @param file 输入文件,不能为<code>null</code>
+	 * @param date 被比较的日期,不能为<code>null</code>
+	 * @return 当输入文件存在并且比参与比较的日期旧的时候返回<code>true</code>
+	 * @throws IllegalArgumentException if 当输入文件为<code>null</code>的时候抛出
+	 * @throws IllegalArgumentException if 当参与比较的日期为<code>null</code>的时候抛出
+	 * @since 1.0
+	 */
+	public static boolean isFileOlder(File file, Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("No specified date");
+		}
+		return FileUtil.isFileOlder(file, date.getTime());
+	}
+
+	/**
+	 * <p>
+	 * 测试指定的源文件(<code>file</code>)日期是否比引用文件(<code>reference</code>)旧.
+	 * </p>
+	 * 
+	 * @param file 被比较的源文件,不能为<code>null</code>
+	 * @param reference 被比较的引用文件,不能为<code>null</code>
+	 * @return true 当源文件(<code>file</code>)存在并且比引用文件(<code>reference</code>
+	 *         )旧的时候返回<code>true</code>
+	 * @throws IllegalArgumentException 当源文件为<code>null</code>时抛出
+	 * @throws IllegalArgumentException 当引用文件(<code>reference</code>)为
+	 *             <code>null</code>或者不存在时抛出
+	 * @since 1.0
+	 */
+	public static boolean isFileOlder(File file, File reference) {
+		if (reference == null) {
+			throw new IllegalArgumentException("No specified reference file");
+		}
+		if (!reference.exists()) {
+			throw new IllegalArgumentException("The reference file '" + file
+					+ "' doesn't exist");
+		}
+		return FileUtil.isFileOlder(file, reference.lastModified());
+	}
+
+	/**
+	 * <p>
+	 * 测试输入文件日期是否比给定时间旧.
+	 * </p>
+	 * 
+	 * @param file 输入文件,不能为<code>null</code>
+	 * @param timeMillis 参与比较的时间毫秒数,从<code>1970-01-01 00:00:00</code>开始计算
+	 * @return 当输入文件存在并且比参与比较的时间旧的时候返回<code>true</code>
+	 * @throws IllegalArgumentException 当输入文件为<code>null</code>的时候抛出
+	 * @since 1.0
+	 */
+	public static boolean isFileOlder(File file, long timeMillis) {
+		if (file == null) {
+			throw new IllegalArgumentException("No specified file");
+		}
+		if (!file.exists()) {
+			return false;
+		}
+		return file.lastModified() < timeMillis;
+	}
+
+	/**
+	 * <p>
+	 * 移动目录.
+	 * </p>
+	 * 
+	 * @param srcDir 被移动的目录
+	 * @param destDir 目标目录
+	 * @throws NullPointerException 当源目录或目标目录为<code>null</code>的时候抛出
+	 * @throws IOException 当源目录或者目标目录无效的时候抛出
+	 * @throws IOException 当移动过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void moveDirectory(File srcDir, File destDir)
+			throws IOException {
+		if (srcDir == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destDir == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (!srcDir.exists()) {
+			throw new FileNotFoundException("Source '" + srcDir
+					+ "' does not exist");
+		}
+		if (!srcDir.isDirectory()) {
+			throw new IOException("Source '" + srcDir + "' is not a directory");
+		}
+		if (destDir.exists()) {
+			throw new IOException("Destination '" + destDir
+					+ "' already exists");
+		}
+		boolean rename = srcDir.renameTo(destDir);
+		if (!rename) {
+			FileUtil.copyDirectory(srcDir, destDir);
+			FileUtil.deleteDirectory(srcDir);
+			if (srcDir.exists()) {
+				throw new IOException("Failed to delete original directory '"
+						+ srcDir + "' after copy to '" + destDir + "'");
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 移动目录.
+	 * </p>
+	 * <p>
+	 * 当目标目录不存在的时候,方法根据(<code>createDestDir</code>
+	 * )参数来判断是否创建目标目录.如果需要创建则创建目标目录,否则抛出异常
+	 * </p>
+	 * 
+	 * @param src 被移动的目录
+	 * @param destDir 目标目录
+	 * @param createDestDir 当目标目录不存在且为<code>true</code>的时候创建目标目录,为
+	 *            <code>false</code>的时候抛出异常.
+	 * @throws NullPointerException 当源目录或目标目录为<code>null</code>的时候抛出
+	 * @throws IOException 当源目录或者目标目录无效的时候抛出
+	 * @throws IOException 当移动过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void moveDirectoryToDirectory(File src, File destDir,
+			boolean createDestDir) throws IOException {
+		if (src == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destDir == null) {
+			throw new NullPointerException(
+					"Destination directory must not be null");
+		}
+		if (!destDir.exists() && createDestDir) {
+			destDir.mkdirs();
+		}
+		if (!destDir.exists()) {
+			throw new FileNotFoundException("Destination directory '" + destDir
+					+ "' does not exist [createDestDir=" + createDestDir + "]");
+		}
+		if (!destDir.isDirectory()) {
+			throw new IOException("Destination '" + destDir
+					+ "' is not a directory");
+		}
+		FileUtil.moveDirectory(src, new File(destDir, src.getName()));
+	}
+
+	/**
+	 * <p>
+	 * 移动文件.
+	 * </p>
+	 * 
+	 * @param srcFile 被移动的源文件
+	 * @param destFile 目标文件
+	 * @throws NullPointerException 当源文件或目标文件为<code>null</code>的时候抛出
+	 * @throws IOException 当源文件或者目标文件无效的时候抛出
+	 * @throws IOException 当移动过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void moveFile(File srcFile, File destFile) throws IOException {
+		if (srcFile == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destFile == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (!srcFile.exists()) {
+			throw new FileNotFoundException("Source '" + srcFile
+					+ "' does not exist");
+		}
+		if (srcFile.isDirectory()) {
+			throw new IOException("Source '" + srcFile + "' is a directory");
+		}
+		if (destFile.exists()) {
+			throw new IOException("Destination '" + destFile
+					+ "' already exists");
+		}
+		if (destFile.isDirectory()) {
+			throw new IOException("Destination '" + destFile
+					+ "' is a directory");
+		}
+		boolean rename = srcFile.renameTo(destFile);
+		if (!rename) {
+			FileUtil.copyFile(srcFile, destFile);
+			if (!srcFile.delete()) {
+				FileUtil.deleteQuietly(destFile);
+				throw new IOException("Failed to delete original file '"
+						+ srcFile + "' after copy to '" + destFile + "'");
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 将文件移动到目标目录中.
+	 * </p>
+	 * <p>
+	 * 当目标目录不存在的时候,方法根据(<code>createDestDir</code>
+	 * )参数来判断是否创建目标目录.如果需要创建则创建目标目录,否则抛出异常.
+	 * </p>
+	 * 
+	 * @param srcFile 被移动的源文件
+	 * @param destDir 目标目录
+	 * @param createDestDir 当目标目录不存在且为<code>true</code>的时候创建目标目录,为
+	 *            <code>false</code>的时候抛出异常.
+	 * @throws NullPointerException 当源文件或目标文件为<code>null</code>的时候抛出
+	 * @throws IOException 当源文件或者目标文件无效的时候抛出
+	 * @throws IOException 当移动过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void moveFileToDirectory(File srcFile, File destDir,
+			boolean createDestDir) throws IOException {
+		if (srcFile == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destDir == null) {
+			throw new NullPointerException(
+					"Destination directory must not be null");
+		}
+		if (!destDir.exists() && createDestDir) {
+			destDir.mkdirs();
+		}
+		if (!destDir.exists()) {
+			throw new FileNotFoundException("Destination directory '" + destDir
+					+ "' does not exist [createDestDir=" + createDestDir + "]");
+		}
+		if (!destDir.isDirectory()) {
+			throw new IOException("Destination '" + destDir
+					+ "' is not a directory");
+		}
+		FileUtil.moveFile(srcFile, new File(destDir, srcFile.getName()));
+	}
+
+	/**
+	 * <p>
+	 * 将源文件或者源目录移动到目标目录中.
+	 * </p>
+	 * 
+	 * @param src 被移动的源文件或者源目录
+	 * @param destDir 目标目录
+	 * @param createDestDir 当目标目录不存在且为<code>true</code>的时候创建目标目录,为
+	 *            <code>false</code>的时候抛出异常.
+	 * @throws NullPointerException 当源文件或目标目录为<code>null</code>的时候抛出
+	 * @throws IOException 当源文件或者目标文件无效的时候抛出
+	 * @throws IOException 当移动过程中发生错误时抛出
+	 * @since 1.0
+	 */
+	public static void moveToDirectory(File src, File destDir,
+			boolean createDestDir) throws IOException {
+		if (src == null) {
+			throw new NullPointerException("Source must not be null");
+		}
+		if (destDir == null) {
+			throw new NullPointerException("Destination must not be null");
+		}
+		if (!src.exists()) {
+			throw new FileNotFoundException("Source '" + src
+					+ "' does not exist");
+		}
+		if (src.isDirectory()) {
+			FileUtil.moveDirectoryToDirectory(src, destDir, createDestDir);
+		} else {
+			FileUtil.moveFileToDirectory(src, destDir, createDestDir);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 打开指定<code>File</code>的{@link FileInputStream}.相比较于简单调用
+	 * <code>new FileInputStream(file)</code>方法,此方法提供了更好的错误处理机制.
+	 * </p>
+	 * 
+	 * @param file 被打开用于输入的<code>File</code>对象,不能为<code>null</code>
+	 * @return 指定<code>File</code>的{@link FileInputStream}.
+	 * @throws FileNotFoundException 当文件不存在时抛出.
+	 * @throws IOException 当文件时目录时抛出.
+	 * @throws IOException 当文件不可读时抛出.
+	 * @since 1.0
+	 */
+	public static FileInputStream openInputStream(File file) throws IOException {
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				throw new IOException("File '" + file
+						+ "' exists but is a directory");
+			}
+			if (file.canRead() == false) {
+				throw new IOException("File '" + file + "' cannot be read");
+			}
+		} else {
+			throw new FileNotFoundException("File '" + file
+					+ "' does not exist");
+		}
+		return new FileInputStream(file);
+	}
+
+	/**
+	 * <p>
+	 * 打开指定<code>File</code>的{@link FileInputStream}.当给定的文件不存在时检查并且创建给定文件的父目录.
+	 * </p>
+	 * 
+	 * @param file 被打开用于输出的<code>File</code>对象,不能为<code>null</code>
+	 * @return 指定<code>File</code>的{@link FileOutputStream}
+	 * @throws IOException 当文件不存在时抛出
+	 * @throws IOException 当文件不能被写入时抛出
+	 * @throws IOException 当父目录创建失败时抛出
+	 * @since 1.0
+	 */
+	public static FileOutputStream openOutputStream(File file)
+			throws IOException {
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				throw new IOException("File '" + file
+						+ "' exists but is a directory");
+			}
+			if (file.canWrite() == false) {
+				throw new IOException("File '" + file
+						+ "' cannot be written to");
+			}
+		} else {
+			File parent = file.getParentFile();
+			if ((parent != null) && (parent.exists() == false)) {
+				if (parent.mkdirs() == false) {
+					throw new IOException("File '" + file
+							+ "' could not be created");
+				}
+			}
+		}
+		return new FileOutputStream(file);
+	}
+
+	/**
+	 * <p>
+	 * 打开指定<code>File</code>的{@link FileInputStream}.当给定的文件不存在时检查并且创建给定文件的父目录.
+	 * </p>
+	 * 
+	 * @param file 被打开用于输出的<code>File</code>对象,不能为<code>null</code>
+	 * @param append 如果为<code>true</code>，则将字节写入文件末尾处，而不是写入文件开始处
+	 * @return 指定<code>File</code>的{@link FileOutputStream}
+	 * @throws IOException 当文件不存在时抛出
+	 * @throws IOException 当文件不能被写入时抛出
+	 * @throws IOException 当父目录创建失败时抛出
+	 * @since 1.0
+	 */
+	public static FileOutputStream openOutputStream(File file, boolean append)
+			throws IOException {
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				throw new IOException("File '" + file
+						+ "' exists but is a directory");
+			}
+			if (file.canWrite() == false) {
+				throw new IOException("File '" + file
+						+ "' cannot be written to");
+			}
+		} else {
+			File parent = file.getParentFile();
+			if ((parent != null) && (parent.exists() == false)) {
+				if (parent.mkdirs() == false) {
+					throw new IOException("File '" + file
+							+ "' could not be created");
+				}
+			}
+		}
+		return new FileOutputStream(file, append);
+	}
+
+	/**
+	 * <p>
+	 * 读取输入文件内容到字节数组.此文件需要处于关闭状态.
+	 * </p>
+	 * 
+	 * @param file 被读取的文件,不能为<code>null</code>.
+	 * @return 读取到文件内容的字节数组输出.
+	 * @throws IOException 当读取过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	public static byte[] readFileToByteArray(File file) throws IOException {
+		InputStream in = null;
+		try {
+			in = FileUtil.openInputStream(file);
+			return IOUtil.toByteArray(in);
+		} finally {
+			IOUtil.closeQuietly(in);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 采用平台默认的<code>encoding</code>读取输入文件内容,以字符串形式输出.此文件需要处于关闭状态.
+	 * </p>
+	 * 
+	 * @param file 被读取的文件,不能为<code>null</code>.
+	 * @return 读取到文件内容的字符串输出.
+	 * @throws IOException 当读取过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	public static String readFileToString(File file) throws IOException {
+		return FileUtil.readFileToString(file, null);
+	}
+
+	/**
+	 * <p>
+	 * 采用给定的<code>encoding</code>读取输入文件内容,以字符串形式输出.此文件需要处于关闭状态.
+	 * </p>
+	 * 
+	 * @param file 被读取的文件,不能为<code>null</code>.
+	 * @param encoding 读取文件时使用的<code>encoding</code>.当<code>encoding</code>为
+	 *            <code>null</code>时使用平台默认的 <code>encoding</code>.
+	 * @return 读取到文件内容的字符串输出.
+	 * @throws IOException 当读取过程发生错误时抛出.
+	 * @throws java.io.UnsupportedEncodingException 当给定的<code>encoding</code>
+	 *             不被Java VM所支持时抛出.
+	 * @since 1.0
+	 */
+	public static String readFileToString(File file, String encoding)
+			throws IOException {
+		InputStream in = null;
+		try {
+			in = FileUtil.openInputStream(file);
+			return IOUtil.toString(in, encoding);
+		} finally {
+			IOUtil.closeQuietly(in);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 采用平台默认的<code>encoding</code>按行读取输入文件内容,以字符串列表形式输出.此文件需要处于关闭状态.
+	 * </p>
+	 * 
+	 * @param file 被读取的文件,不能为<code>null</code>.
+	 * @return 读取到文件内容的字符串列表输出.
+	 * @throws IOException 当读取过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static List readLines(File file) throws IOException {
+		return FileUtil.readLines(file, null);
+	}
+
+	/**
+	 * <p>
+	 * 采用给定的<code>encoding</code>按行读取输入文件内容,以字符串列表形式输出.此文件需要处于关闭状态.
+	 * </p>
+	 * 
+	 * @param file 被读取的文件,不能为<code>null</code>.
+	 * @param encoding 读取文件时使用的<code>encoding</code>,当<code>encoding</code>为
+	 *            <code>null</code>时使用平台默认的 <code>encoding</code>.
+	 * @return 读取到文件内容的字符串列表输出.
+	 * @throws IOException 当读取过程发生错误时抛出.
+	 * @throws java.io.UnsupportedEncodingException 当给定的<code>encoding</code>
+	 *             不被Java VM所支持时抛出.
+	 * @since 1.0
+	 */
+	public static List<String> readLines(File file, String encoding)
+			throws IOException {
+		InputStream in = null;
+		try {
+			in = FileUtil.openInputStream(file);
+			return IOUtil.readLines(in, encoding);
+		} finally {
+			IOUtil.closeQuietly(in);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 递归统计输入目录的大小(包含目录下的所有文件).
+	 * </p>
+	 * 
+	 * @param directory 被统计的目录,不能为<code>null</code>
+	 * @return 输入目录的大小
+	 * @throws NullPointerException 当输入目录为<code>null</code>时抛出
+	 */
+	public static long sizeOfDirectory(File directory) {
+		if (!directory.exists()) {
+			String message = directory + " does not exist";
+			throw new IllegalArgumentException(message);
+		}
+
+		if (!directory.isDirectory()) {
+			String message = directory + " is not a directory";
+			throw new IllegalArgumentException(message);
+		}
+
+		long size = 0;
+
+		File[] files = directory.listFiles();
+		if (files == null) {
+			return 0L;
+		}
+		for (File file : files) {
+			if (file.isDirectory()) {
+				size += FileUtil.sizeOfDirectory(file);
+			} else {
+				size += file.length();
+			}
+		}
+		return size;
+	}
+
+	/**
+	 * <p>
+	 * 写入输入字节数组到给定的文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件
+	 * @param data 写入文件内容的源字节数组
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	public static void writeByteArrayToFile(File file, byte[] data)
+			throws IOException {
+		OutputStream out = null;
+		try {
+			out = FileUtil.openOutputStream(file);
+			out.write(data);
+		} finally {
+			IOUtil.closeQuietly(out);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认字符<code>encoding</code>和默认行分隔符将输入<code>Collection</code>
+	 * 中每个元素的字符串表达形式按行写入文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件.
+	 * @param lines 写入文件内容的源<code>Collection</code>,当<code>Collection</code>中元素为
+	 *            <code>null</code>时将产生空行.
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(File file, Collection lines)
+			throws IOException {
+		FileUtil.writeLines(file, null, lines, null);
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的字符<code>encoding</code>和指定的行分隔符将输入<code>Collection</code>
+	 * 中每个元素的字符串表达形式按行写入文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件.
+	 * @param lines 写入文件内容的源<code>Collection</code>,当<code>Collection</code>中元素为
+	 *            <code>null</code>时将产生空行.
+	 * @param encoding
+	 * @param lineEnding 使用的行分隔符, 当行分隔符为<code>null</code>时使用系统默认值.
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(File file, Collection lines, String encoding)
+			throws IOException {
+		FileUtil.writeLines(file, null, lines, encoding);
+	}
+
+	/**
+	 * <p>
+	 * 使用指定字符<code>encoding</code>和默认行分隔符将输入<code>Collection</code>
+	 * 中每个元素的字符串表达形式按行写入文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件.
+	 * @param lineEnding
+	 * @param encoding 写入文件时使用的字符<code>encoding</code>,当字符<code>encoding</code>为
+	 *            <code>null</code>时使用平台默认的
+	 *            字符<code>encoding</code>.
+	 * @param lines 写入文件内容的源<code>Collection</code>,当<code>Collection</code>中元素为
+	 *            <code>null</code>时将产生空行.
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @throws java.io.UnsupportedEncodingException 当给定的字符<code>encoding</code>
+	 *             不被Java VM所支持时抛出.
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(File file, String lineEnding, Collection lines)
+			throws IOException {
+		FileUtil.writeLines(file, lineEnding, lines, null);
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的字符<code>encoding</code>和指定的行分隔符将输入<code>Collection</code>
+	 * 中每个元素的字符串表达形式按行写入文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件.
+	 * @param encoding 写入文件时使用的字符<code>encoding</code>,当字符<code>encoding</code>为
+	 *            <code>null</code>时使用平台默认的
+	 *            字符<code>encoding</code>.
+	 * @param lines 写入文件内容的源<code>Collection</code>,当<code>Collection</code>中元素为
+	 *            <code>null</code>时将产生空行.
+	 * @param lineEnding 使用的行分隔符, 当行分隔符为<code>null</code>时使用系统默认值.
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @throws java.io.UnsupportedEncodingException 当给定的字符<code>encoding</code>
+	 *             不被Java VM所支持时抛出.
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(File file, String lineEnding,
+			Collection lines, String encoding) throws IOException {
+		OutputStream out = null;
+		try {
+			out = FileUtil.openOutputStream(file);
+			IOUtil.writeLines(lines, lineEnding, out, encoding);
+		} finally {
+			IOUtil.closeQuietly(out);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的字符<code>encoding</code>和指定的行分隔符将输入<code>Collection</code>
+	 * 中每个元素的字符串表达形式按行写入文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件.
+	 * @param encoding 写入文件时使用的字符<code>encoding</code>,当字符<code>encoding</code>为
+	 *            <code>null</code>时使用平台默认的
+	 *            字符<code>encoding</code>.
+	 * @param lines 写入文件内容的源<code>Collection</code>,当<code>Collection</code>中元素为
+	 *            <code>null</code>时将产生空行.
+	 * @param lineEnding 使用的行分隔符, 当行分隔符为<code>null</code>时使用系统默认值.
+	 * @param append 为<code>true</code>时将字节写入文件末尾处而不是写入文件开始处
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(File file, String lineEnding,
+			Collection lines, String encoding, boolean append)
+			throws IOException {
+		OutputStream out = null;
+		try {
+			out = FileUtil.openOutputStream(file, append);
+			IOUtil.writeLines(lines, lineEnding, out, encoding);
+		} finally {
+			IOUtil.closeQuietly(out);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的<code>encoding</code>写入输入字符串到给定的文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件
+	 * @param data 写入文件内容的源字符串
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @since 1.0
+	 */
+	public static void writeStringToFile(File file, String data)
+			throws IOException {
+		FileUtil.writeStringToFile(file, data, null);
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的<code>encoding</code>写入输入字符串到给定的文件中.
+	 * </p>
+	 * 
+	 * @param file 被写入的文件
+	 * @param data 写入文件内容的源字符串
+	 * @param encoding 写入文件时使用的<code>encoding</code>,当<code>encoding</code>为
+	 *            <code>null</code>时使用平台默认的 <code>encoding</code>.
+	 * @throws IOException 当写入过程发生错误时抛出.
+	 * @throws java.io.UnsupportedEncodingException 当给定的<code>encoding</code>
+	 *             不被Java VM所支持时抛出.
+	 * @since 1.0
+	 */
+	public static void writeStringToFile(File file, String data, String encoding)
+			throws IOException {
+		OutputStream out = null;
+		try {
+			out = FileUtil.openOutputStream(file);
+			IOUtil.write(data, out, encoding);
+		} finally {
+			IOUtil.closeQuietly(out);
+		}
+	}
+
+	private FileUtil() {
+		super();
+	}
+}

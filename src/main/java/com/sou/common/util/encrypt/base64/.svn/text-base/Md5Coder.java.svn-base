@@ -1,0 +1,53 @@
+/**
+ * 项目名：tuniuUtil
+ * 包名：com.tuniu.util.encrypt.base64
+ * 文件名：Base64Decoder.java *
+ * 日期：2011-1-13 上午02:13:00
+ * Copyright 途牛科技有限公司 2011
+ * 版权所有
+ */
+package com.tuniu.util.encrypt.base64;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+/**
+ * 用于对字符串进行md5编码码的工具类
+ * 
+ * @author tianzhipeng
+ */
+
+public class Md5Coder {
+
+	private Md5Coder() {}
+
+	/**利用MD5进行加密
+     * @param str  待加密的字符串
+     * @return  加密后的字符串
+     * @throws NoSuchAlgorithmException  没有这种产生消息摘要的算法
+	 * @throws UnsupportedEncodingException 
+     */
+    public static String EncoderByMd5(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+    	MessageDigest md = MessageDigest.getInstance("MD5");  
+        md.update(text.getBytes());  
+        byte[] digest = md.digest();      
+        StringBuffer md5 = new StringBuffer();  
+        for (int i = 0; i < digest.length; i++) {  
+            md5.append(Character.forDigit((digest[i] & 0xF0) >> 4, 16));  
+            md5.append(Character.forDigit((digest[i] & 0xF), 16));  
+        }  
+        return md5.toString(); 
+    }
+    public static void main(String[] args) {
+    	try {
+			System.out.println(EncoderByMd5("alfsdlfh"));
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

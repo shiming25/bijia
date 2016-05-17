@@ -1,0 +1,38 @@
+/**
+ * 文件名：NullArgumentException.java *
+ * 日期：2010-7-2
+ * Copyright 途牛科技有限公司 2010
+ * 版权所有
+ */
+package com.tuniu.util.lang.exception;
+
+/**
+ * <p>
+ * 空参数异常类.
+ * </p>
+ * <p>
+ * 当参数为<code>null</code>并且原方法并不期望传入的参数为<code>null</code>
+ * 时抛出.此异常类继承自IllegalArgumentException
+ * </p>
+ * 
+ * @author yuxiumin
+ * @since 1.0
+ * @version 1.0 2010-7-2
+ * @see java.lang.IllegalArgumentException
+ */
+
+public class NullArgumentException extends IllegalArgumentException {
+
+	private static final long serialVersionUID = 1174360235354917591L;
+
+	/**
+	 * <p>
+	 * 用给定的参数名初始化异常实例.
+	 * </p>
+	 * 
+	 * @param argName 给定的参数名称
+	 */
+	public NullArgumentException(String argName) {
+		super((argName == null ? "Argument" : argName) + " must not be null.");
+	}
+}

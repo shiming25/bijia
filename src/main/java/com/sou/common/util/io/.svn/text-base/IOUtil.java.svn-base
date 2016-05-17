@@ -1,0 +1,1028 @@
+/**
+ * 文件名：IOUtil.java *
+ * 日期：2011-1-17
+ * Copyright 途牛科技有限公司 2011
+ * 版权所有
+ */
+package com.tuniu.util.io;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * <p>
+ * IO操作工具类.封装了对IO操作的一些功能.
+ * </p>
+ * 
+ * @author yuxiumin
+ */
+
+public class IOUtil {
+
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+	/**
+	 * 系统默认的字符分隔符.
+	 */
+	public static final char DIR_SEPARATOR = File.separatorChar;
+
+	/**
+	 * Unix风格的字符分隔符.
+	 */
+	public static final char DIR_SEPARATOR_UNIX = '/';
+
+	/**
+	 * Windows风格的字符分隔符.
+	 */
+	public static final char DIR_SEPARATOR_WINDOWS = '\\';
+
+	/**
+	 * 系统默认的行分隔符.
+	 */
+	public static final String LINE_SEPARATOR;
+
+	/**
+	 * Unix风格的行分隔符.
+	 */
+	public static final String LINE_SEPARATOR_UNIX = "\n";
+	/**
+	 * Windows风格的行分隔符.
+	 */
+	public static final String LINE_SEPARATOR_WINDOWS = "\r\n";
+
+	static {
+		StringWriter buf = new StringWriter(4);
+		PrintWriter out = new PrintWriter(buf);
+		out.println();
+		LINE_SEPARATOR = buf.toString();
+	}
+
+	/**
+	 * <p>
+	 * 关闭<code>InputStream</code>.
+	 * </p>
+	 * <p>
+	 * 此方法与{@link InputStream#close()}类似,区别之处在于此方法忽略了异常处理.通常被用于
+	 * <code>finally</code>块中.
+	 * </p>
+	 * 
+	 * @param input 被关闭的<code>InputStream</code>,可以为<code>null</code>或者已经被关闭.
+	 * @since 1.0
+	 */
+	public static void closeQuietly(InputStream input) {
+		try {
+			if (input != null) {
+				input.close();
+			}
+		} catch (IOException ioe) {
+			// ignore
+		}
+	}
+
+	/**
+	 * <p>
+	 * 关闭<code>OutputStream</code>.
+	 * </p>
+	 * <p>
+	 * 此方法与{@link OutputStream#close()}类似,区别之处在于此方法忽略了异常处理.通常被用于
+	 * <code>finally</code>块中.
+	 * </p>
+	 * 
+	 * @param output 被关闭的<code>OutputStream</code>,可以为<code>null</code>或者已经被关闭.
+	 * @since 1.0
+	 */
+	public static void closeQuietly(OutputStream output) {
+		try {
+			if (output != null) {
+				output.close();
+			}
+		} catch (IOException ioe) {
+			// ignore
+		}
+	}
+
+	/**
+	 * <p>
+	 * 关闭<code>Reader</code>.
+	 * </p>
+	 * <p>
+	 * 此方法与{@link Reader#close()}类似,区别之处在于此方法忽略了异常处理.通常被用于<code>finally</code>
+	 * 块中.
+	 * </p>
+	 * 
+	 * @param input 被关闭的<code>Reader</code>,可以为<code>null</code>或者已经被关闭.
+	 * @since 1.0
+	 */
+	public static void closeQuietly(Reader input) {
+		try {
+			if (input != null) {
+				input.close();
+			}
+		} catch (IOException ioe) {
+			// ignore
+		}
+	}
+
+	/**
+	 * <p>
+	 * 关闭<code>Writer</code>.
+	 * </p>
+	 * <p>
+	 * 此方法与{@link Writer#close()}类似,区别之处在于此方法忽略了异常处理.通常被用于<code>finally</code>
+	 * 块中.
+	 * </p>
+	 * 
+	 * @param output 被关闭的<code>Writer</code>,可以为<code>null</code>或者已经被关闭.
+	 * @since 1.0
+	 */
+	public static void closeQuietly(Writer output) {
+		try {
+			if (output != null) {
+				output.close();
+			}
+		} catch (IOException ioe) {
+			// ignore
+		}
+	}
+
+	/**
+	 * <p>
+	 * 比较两个<code>InputStream</code>的内容判断它们是否相等.
+	 * </p>
+	 * 
+	 * @param input1 第一个待比较的<code>InputStream</code>
+	 * @param input2 第二个待比较的<code>InputStream</code>
+	 * @return 如果两个<code>InputStream</code>的内容相等或者它们都不存在的话返回<code>true</code>
+	 *         ,否则返回<code>false</code>
+	 * @throws NullPointerException 当任意一个<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static boolean contentEquals(InputStream input1, InputStream input2)
+			throws IOException {
+		if (!(input1 instanceof BufferedInputStream)) {
+			input1 = new BufferedInputStream(input1);
+		}
+		if (!(input2 instanceof BufferedInputStream)) {
+			input2 = new BufferedInputStream(input2);
+		}
+
+		int ch = input1.read();
+		while (-1 != ch) {
+			int ch2 = input2.read();
+			if (ch != ch2) {
+				return false;
+			}
+			ch = input1.read();
+		}
+
+		int ch2 = input2.read();
+		return (ch2 == -1);
+	}
+
+	/**
+	 * <p>
+	 * 比较两个<code>Reader</code>的内容判断它们是否相等.
+	 * </p>
+	 * 
+	 * @param input1 第一个待比较的<code>Reader</code>
+	 * @param input2 第二个待比较的<code>Reader</code>
+	 * @return 如果两个<code>Reader</code>的内容相等或者它们都不存在的话返回<code>true</code>,否则返回
+	 *         <code>false</code>
+	 * @throws NullPointerException 当任意一个<code>Reader</code>为<code>null</code>
+	 *             时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static boolean contentEquals(Reader input1, Reader input2)
+			throws IOException {
+		if (!(input1 instanceof BufferedReader)) {
+			input1 = new BufferedReader(input1);
+		}
+		if (!(input2 instanceof BufferedReader)) {
+			input2 = new BufferedReader(input2);
+		}
+
+		int ch = input1.read();
+		while (-1 != ch) {
+			int ch2 = input2.read();
+			if (ch != ch2) {
+				return false;
+			}
+			ch = input1.read();
+		}
+
+		int ch2 = input2.read();
+		return (ch2 == -1);
+	}
+
+	/**
+	 * <p>
+	 * 复制<code>InputStream</code>中的内容到<code>OutputStream</code>中.
+	 * </p>
+	 * <p>
+	 * 对于超过2GB的大流,方法在复制完成后将返回<code>-1</code>.对于容量过大的流,建议使用
+	 * <code>copyLarge(InputStream, OutputStream)</code>方法.
+	 * </p>
+	 * <p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @return 复制的字节数
+	 * @throws NullPointerException 当<code>InputStream</code>或者
+	 *             <code>OutputStream</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @throws ArithmeticException 当字节数过大时抛出
+	 * @since 1.0
+	 */
+	public static int copy(InputStream input, OutputStream output)
+			throws IOException {
+		long count = IOUtil.copyLarge(input, output);
+		if (count > Integer.MAX_VALUE) {
+			return -1;
+		}
+		return (int) count;
+	}
+
+	/**
+	 * <p>
+	 * 使用默认的字符encoding复制源<code>InputStream</code>中的内容到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>InputStream</code>或者
+	 *             <code>Writer</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void copy(InputStream input, Writer output)
+			throws IOException {
+		InputStreamReader in = new InputStreamReader(input);
+		IOUtil.copy(in, output);
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的字符encoding复制源<code>InputStream</code>中的内容到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>InputStream</code>或者
+	 *             <code>Writer</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void copy(InputStream input, Writer output, String encoding)
+			throws IOException {
+		if (encoding == null) {
+			IOUtil.copy(input, output);
+		} else {
+			InputStreamReader in = new InputStreamReader(input, encoding);
+			IOUtil.copy(in, output);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的字符encoding复制源<code>Reader</code>中的内容到<code>OutputStream</code>
+	 * 中,并且调用<code>OutputStream.flush()</code>方法.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>Reader</code>或者<code>Writer</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void copy(Reader input, OutputStream output)
+			throws IOException {
+		OutputStreamWriter out = new OutputStreamWriter(output);
+		IOUtil.copy(input, out);
+		out.flush();
+	}
+
+	/**
+	 * Copy chars from a <code>Reader</code> to bytes on an
+	 * <code>OutputStream</code> using the specified character
+	 * encoding, and
+	 * calling flush.
+	 * <p>
+	 * 使用指定的字符encoding复制源<code>Reader</code>中的内容到<code>OutputStream</code>中,并且调用
+	 * <code>OutputStream.flush()</code>方法.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>Reader</code>或者<code>Writer</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void copy(Reader input, OutputStream output, String encoding)
+			throws IOException {
+		if (encoding == null) {
+			IOUtil.copy(input, output);
+		} else {
+			OutputStreamWriter out = new OutputStreamWriter(output, encoding);
+			IOUtil.copy(input, out);
+			out.flush();
+		}
+	}
+
+	/**
+	 * <p>
+	 * 复制源<code>Reader</code>中的内容到<code>Writer</code>中.
+	 * </p>
+	 * <p>
+	 * 对于超过2GB的大流,方法在复制完成后将返回<code>-1</code>.对于容量过大的流,建议使用
+	 * <code>copyLarge(Reader, Writer)</code>方法.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @return 复制的字节数
+	 * @throws NullPointerException 当<code>InputStream</code>或者
+	 *             <code>Writer</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @throws ArithmeticException 当字节数过大时抛出
+	 * @since 1.0
+	 */
+	public static int copy(Reader input, Writer output) throws IOException {
+		long count = IOUtil.copyLarge(input, output);
+		if (count > Integer.MAX_VALUE) {
+			return -1;
+		}
+		return (int) count;
+	}
+
+	/**
+	 * <p>
+	 * 复制大的<code>InputStream</code>(通常超过2G)中的内容到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @return 复制的字节数
+	 * @throws NullPointerException 当<code>InputStream</code>或者
+	 *             <code>OutputStream</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static long copyLarge(InputStream input, OutputStream output)
+			throws IOException {
+		byte[] buffer = new byte[IOUtil.DEFAULT_BUFFER_SIZE];
+		long count = 0;
+		int n = 0;
+		while (-1 != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+			count += n;
+		}
+		return count;
+	}
+
+	/**
+	 * <p>
+	 * 复制大的<code>Reader</code>(通常超过2G)中的内容到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @return 复制的字节数
+	 * @throws NullPointerException 当<code>Reader</code>或者<code>Writer</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static long copyLarge(Reader input, Writer output)
+			throws IOException {
+		char[] buffer = new char[IOUtil.DEFAULT_BUFFER_SIZE];
+		long count = 0;
+		int n = 0;
+		while (-1 != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+			count += n;
+		}
+		return count;
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding从<code>InputStream</code>读取内容,每行一条记录的写入字符串列表中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @return 输出的字符串列表
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static List<String> readLines(InputStream input) throws IOException {
+		InputStreamReader reader = new InputStreamReader(input);
+		return IOUtil.readLines(reader);
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding从<code>InputStream</code>读取内容,每行一条记录的写入字符串列表中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @return 输出的字符串列表
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static List<String> readLines(InputStream input, String encoding)
+			throws IOException {
+		if (encoding == null) {
+			return IOUtil.readLines(input);
+		}
+		InputStreamReader reader = new InputStreamReader(input, encoding);
+		return IOUtil.readLines(reader);
+	}
+
+	/**
+	 * <p>
+	 * 从<code>Reader</code>读取内容,每行一条记录的写入字符串列表中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @return 输出的字符串列表
+	 * @throws NullPointerException 当给定<code>Reader</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static List<String> readLines(Reader input) throws IOException {
+		BufferedReader reader = new BufferedReader(input);
+		List<String> list = new ArrayList<String>();
+		String line = reader.readLine();
+		while (line != null) {
+			list.add(line);
+			line = reader.readLine();
+		}
+		return list;
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将给定<code>InputStream</code>的内容输出到<code>byte[]</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @return 输出的字节数组
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static byte[] toByteArray(InputStream input) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		IOUtil.copy(input, output);
+		return output.toByteArray();
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将给定<code>Reader</code>的内容输出到<code>byte[]</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @return 输出的字节数组
+	 * @throws NullPointerException 当给定<code>Reader</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static byte[] toByteArray(Reader input) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		IOUtil.copy(input, output);
+		return output.toByteArray();
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将给定<code>Reader</code>的内容输出到<code>byte[]</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @return 输出的字节数组
+	 * @throws NullPointerException 当给定<code>Reader</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static byte[] toByteArray(Reader input, String encoding)
+			throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		IOUtil.copy(input, output, encoding);
+		return output.toByteArray();
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将给定<code>InputStream</code>的内容输出到<code>char[]</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @return 输出的字符数组
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static char[] toCharArray(InputStream input) throws IOException {
+		CharArrayWriter output = new CharArrayWriter();
+		IOUtil.copy(input, output);
+		return output.toCharArray();
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将给定<code>InputStream</code>的内容输出到<code>char[]</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @return 输出的字符数组
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static char[] toCharArray(InputStream input, String encoding)
+			throws IOException {
+		CharArrayWriter output = new CharArrayWriter();
+		IOUtil.copy(input, output, encoding);
+		return output.toCharArray();
+	}
+
+	/**
+	 * <p>
+	 * 将给定<code>Reader</code>的内容输出到<code>char[]</code>中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>Reader</code>,不能为<code>null</code>
+	 * @return 输出的字符数组
+	 * @throws NullPointerException 当给定<code>Reader</code>为<code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static char[] toCharArray(Reader input) throws IOException {
+		CharArrayWriter sw = new CharArrayWriter();
+		IOUtil.copy(input, sw);
+		return sw.toCharArray();
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将输入字符串转换成<code>InputStream</code>.
+	 * </p>
+	 * 
+	 * @param input 被转换的输入字符串
+	 * @return 转换后的<code>InputStream</code>.
+	 * @since 1.0
+	 */
+	public static InputStream toInputStream(String input) {
+		byte[] bytes = input.getBytes();
+		return new ByteArrayInputStream(bytes);
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将输入字符串转换成<code>InputStream</code>.
+	 * </p>
+	 * 
+	 * @param input the string to convert 被转换的输入字符串
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws IOException 当encoding无效时抛出
+	 * @return 转换后的<code>InputStream</code>.
+	 * @since 1.0
+	 */
+	public static InputStream toInputStream(String input, String encoding)
+			throws IOException {
+		byte[] bytes = encoding != null ? input.getBytes(encoding) : input
+				.getBytes();
+		return new ByteArrayInputStream(bytes);
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将给定<code>InputStream</code>的内容输出到字符串中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @return 输出的字符串
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static String toString(InputStream input) throws IOException {
+		StringWriter sw = new StringWriter();
+		IOUtil.copy(input, sw);
+		return sw.toString();
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将给定<code>InputStream</code>的内容输出到字符串中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @return 输出的字符串
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static String toString(InputStream input, String encoding)
+			throws IOException {
+		StringWriter sw = new StringWriter();
+		IOUtil.copy(input, sw, encoding);
+		return sw.toString();
+	}
+
+	/**
+	 * <p>
+	 * 将给定<code>Reader</code>的内容输出到字符串中.
+	 * </p>
+	 * 
+	 * @param input 被读取的<code>InputStream</code>,不能为<code>null</code>
+	 * @return 输出的字符串
+	 * @throws NullPointerException 当给定<code>InputStream</code>为
+	 *             <code>null</code>时抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static String toString(Reader input) throws IOException {
+		StringWriter sw = new StringWriter();
+		IOUtil.copy(input, sw);
+		return sw.toString();
+	}
+
+	/**
+	 * <p>
+	 * 将<code>byte[]</code>中的内容写入到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字节数组,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(byte[] data, OutputStream output)
+			throws IOException {
+		if (data != null) {
+			output.write(data);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将<code>byte[]</code>中的内容写入到<code>Writer</code>中.
+	 * </p>
+	 * <p>
+	 * 
+	 * @param data 源字节数组,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(byte[] data, Writer output) throws IOException {
+		if (data != null) {
+			output.write(new String(data));
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将<code>byte[]</code>中的内容写入到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字节数组,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(byte[] data, Writer output, String encoding)
+			throws IOException {
+		if (data != null) {
+			if (encoding == null) {
+				IOUtil.write(data, output);
+			} else {
+				output.write(new String(data, encoding));
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 将<code>char[]</code>中的内容写入到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字符数组,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(char[] data, OutputStream output)
+			throws IOException {
+		if (data != null) {
+			output.write(new String(data).getBytes());
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将<code>char[]</code>中的内容写入到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字符数组,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(char[] data, OutputStream output, String encoding)
+			throws IOException {
+		if (data != null) {
+			if (encoding == null) {
+				IOUtil.write(data, output);
+			} else {
+				output.write(new String(data).getBytes(encoding));
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将<code>char[]</code>中的内容写入到<code>Writer</code>中.
+	 * </p>
+	 * <p>
+	 * 
+	 * @param data 源字符数组,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(char[] data, Writer output) throws IOException {
+		if (data != null) {
+			output.write(data);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将字符串中的内容写入到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字符串,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(String data, OutputStream output)
+			throws IOException {
+		if (data != null) {
+			output.write(data.getBytes());
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将字符串中的内容写入到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字符串,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(String data, OutputStream output, String encoding)
+			throws IOException {
+		if (data != null) {
+			if (encoding == null) {
+				IOUtil.write(data, output);
+			} else {
+				output.write(data.getBytes(encoding));
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 将字符串中的内容写入到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param data 源字符串,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(String data, Writer output) throws IOException {
+		if (data != null) {
+			output.write(data);
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding将<code>StringBuffer</code>中的内容写入到<code>OutputStream</code>
+	 * 中.
+	 * </p>
+	 * 
+	 * @param data 源<code>StringBuffer</code>,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(StringBuffer data, OutputStream output)
+			throws IOException {
+		if (data != null) {
+			output.write(data.toString().getBytes());
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding将<code>StringBuffer</code>中的内容写入到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param data 源<code>StringBuffer</code>,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(StringBuffer data, OutputStream output,
+			String encoding) throws IOException {
+		if (data != null) {
+			if (encoding == null) {
+				IOUtil.write(data, output);
+			} else {
+				output.write(data.toString().getBytes(encoding));
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 将<code>StringBuffer</code>中的内容写入到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param data 源<code>StringBuffer</code>,当其为<code>null</code>时操作不被执行
+	 * @param output 被写入的<code>Writer</code>,不能为<code>null</code>
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	public static void write(StringBuffer data, Writer output)
+			throws IOException {
+		if (data != null) {
+			output.write(data.toString());
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用平台默认的encoding和指定的换行标识符将给定输入集合中元素的字符串表达形式按行输出到<code>OutputStream</code>
+	 * 中.
+	 * </p>
+	 * 
+	 * @param lines 输入集合,当其中元素为<code>null</code>时产生空行
+	 * @param lineEnding 指定的换行标识符,当其为<code>null</code>时使用系统默认值
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>,不能被关闭
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(Collection lines, String lineEnding,
+			OutputStream output) throws IOException {
+		if (lines == null) {
+			return;
+		}
+		if (lineEnding == null) {
+			lineEnding = IOUtil.LINE_SEPARATOR;
+		}
+		for (Iterator it = lines.iterator(); it.hasNext();) {
+			Object line = it.next();
+			if (line != null) {
+				output.write(line.toString().getBytes());
+			}
+			output.write(lineEnding.getBytes());
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的encoding和指定的换行标识符将给定输入集合中元素的字符串表达形式按行输出到<code>OutputStream</code>中.
+	 * </p>
+	 * 
+	 * @param lines 输入集合,当其中元素为<code>null</code>时产生空行
+	 * @param lineEnding 指定的换行标识符,当其为<code>null</code>时使用系统默认值
+	 * @param output 被写入的<code>OutputStream</code>,不能为<code>null</code>,不能被关闭
+	 * @param encoding 使用的encoding,为<code>null</code>时使用平台默认encoding
+	 * @throws NullPointerException 当<code>OutputStream</code>为<code>null</code>
+	 *             的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(Collection lines, String lineEnding,
+			OutputStream output, String encoding) throws IOException {
+		if (encoding == null) {
+			IOUtil.writeLines(lines, lineEnding, output);
+		} else {
+			if (lines == null) {
+				return;
+			}
+			if (lineEnding == null) {
+				lineEnding = IOUtil.LINE_SEPARATOR;
+			}
+			for (Iterator it = lines.iterator(); it.hasNext();) {
+				Object line = it.next();
+				if (line != null) {
+					output.write(line.toString().getBytes(encoding));
+				}
+				output.write(lineEnding.getBytes(encoding));
+			}
+		}
+	}
+
+	/**
+	 * <p>
+	 * 使用指定的换行标识符将给定输入集合中元素的字符串表达形式按行输出到<code>Writer</code>中.
+	 * </p>
+	 * 
+	 * @param lines 输入集合,当其中元素为<code>null</code>时产生空行
+	 * @param lineEnding 指定的换行标识符,当其为<code>null</code>时使用系统默认值
+	 * @param writer 被写入的<code>Writer</code>,不能为<code>null</code>,不能被关闭
+	 * @throws NullPointerException 当<code>Writer</code>为<code>null</code>的时候抛出
+	 * @throws IOException 当发生I/O错误时抛出
+	 * @since 1.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static void writeLines(Collection lines, String lineEnding,
+			Writer writer) throws IOException {
+		if (lines == null) {
+			return;
+		}
+		if (lineEnding == null) {
+			lineEnding = IOUtil.LINE_SEPARATOR;
+		}
+		for (Iterator it = lines.iterator(); it.hasNext();) {
+			Object line = it.next();
+			if (line != null) {
+				writer.write(line.toString());
+			}
+			writer.write(lineEnding);
+		}
+	}
+}

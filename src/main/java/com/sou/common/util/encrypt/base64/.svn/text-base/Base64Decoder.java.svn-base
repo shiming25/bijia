@@ -1,0 +1,43 @@
+/**
+ * 项目名：tuniuUtil
+ * 包名：com.tuniu.util.encrypt.base64
+ * 文件名：Base64Decoder.java *
+ * 日期：2011-1-13 上午02:13:00
+ * Copyright 途牛科技有限公司 2011
+ * 版权所有
+ */
+package com.tuniu.util.encrypt.base64;
+
+import java.io.IOException;
+
+/**
+ * 用于对字符串进行base64解码的工具类
+ * 
+ * @author yuxiumin
+ */
+
+public class Base64Decoder {
+
+	private Base64Decoder() {}
+
+	/**
+	 * 获取解码工具类的实例
+	 * 
+	 * @return 解码工具类的实例
+	 */
+	public static Base64Decoder getInstance() {
+		return new Base64Decoder();
+	}
+
+	/**
+	 * 对给定的字符串进行Base64解密操作
+	 * 
+	 * @param str 待解密的字符串
+	 * @return 解密后的字符串
+	 * @throws IOException
+	 */
+	public static String decode(String str) throws IOException {
+		sun.misc.BASE64Decoder decoder = new sun.misc.BASE64Decoder();
+		return new String(decoder.decodeBuffer(str));
+	}
+}

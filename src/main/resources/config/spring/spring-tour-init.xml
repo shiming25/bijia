@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+<!-- 
+	<context:property-placeholder
+		location="classpath:config/order/orderFinanceInitParam.properties,classpath:config/order/orderInitParam.properties"
+		ignore-unresolvable="true" order="1" />
+ -->
+<!--  
+
+	<bean id="orderInitParam" class="com.tuniu.aladdin.order.restful.assist.OrderInitParam">
+		<property name="orderOperateErrorLogLevel">
+			<value>${orderOperateErrorLogLevel}</value>
+		</property>
+		<property name="personRestfulApiUrl">
+			<value>${personRestfulApiUrl}</value>
+		</property>
+		<property name="contractShowUrl">
+			<value>${contractShowUrl}</value>
+		</property>
+		<property name="contractPdfUrl">
+			<value>${contractPdfUrl}</value>
+		</property>
+		<property name="personModule">
+			<value>${personModule}</value>
+		</property>
+		<property name="custModule">
+			<value>${custModule}</value>
+		</property>
+		<property name="contacterModule">
+			<value>${contacterModule}</value>
+		</property>
+		<property name="personGetPersonByTelIdFunc">
+			<value>${personGetPersonByTelIdFunc}</value>
+		</property>
+		<property name="personGetContacterByKeyFunc">
+			<value>${personGetContacterByKeyFunc}</value>
+		</property>
+		<property name="personGetCustByKeyFunc">
+			<value>${personGetCustByKeyFunc}</value>
+		</property>
+		<property name="personGetCustByIdFunc">
+			<value>${personGetCustByIdFunc}</value>
+		</property>				
+		<property name="personeAddTouristFunc">
+			<value>${personeAddTouristFunc}</value>
+		</property>
+		<property name="personEditTouristFunc">
+			<value>${personEditTouristFunc}</value>
+		</property>
+		<property name="personDelTouristFunc">
+			<value>${personDelTouristFunc}</value>
+		</property>
+		<property name="queryByKeyFunc">
+			<value>${queryByKeyFunc}</value>
+		</property>
+		<property name="regCustFunc">
+			<value>${regCustFunc}</value>
+		</property>
+		<property name="getTouristByIdFunc">
+			<value>${getTouristByIdFunc}</value>
+		</property>
+		<property name="queryCustByIdFunc">
+			<value>${queryCustByIdFunc}</value>
+		</property>
+		
+		
+		<property name="productRestfulApiUrl">
+			<value>${productRestfulApiUrl}</value>
+		</property>
+		<property name="psModule">
+			<value>${psModule}</value>
+		</property>
+		<property name="getActListFunc">
+			<value>${getActListFunc}</value>
+		</property>
+		<property name="productModule">
+			<value>${productModule}</value>
+		</property>
+		<property name="productPriceModule">
+			<value>${productPriceModule}</value>
+		</property>
+		<property name="productListModule">
+			<value>${productListModule}</value>
+		</property>
+		<property name="areatModule">
+			<value>${areatModule}</value>
+		</property>
+		<property name="stockModule">
+			<value>${stockModule}</value>
+		</property>
+		<property name="getProductByContainerIdFunc">
+			<value>${getProductByContainerIdFunc}</value>
+		</property>
+		<property name="getProductListByCon">
+			<value>${getProductListByCon}</value>
+		</property>		
+		<property name="getDepartTimePriceFunc">
+			<value>${getDepartTimePriceFunc}</value>
+		</property>
+		<property name="getDepartTimePriceListFunc">
+			<value>${getDepartTimePriceListFunc}</value>
+		</property>
+		<property name="queryAdditionalProductsUrl">
+			<value>${queryAdditionalProductsUrl}</value>
+		</property>
+		<property name="getAreaByTypeFunc">
+			<value>${getAreaByTypeFunc}</value>
+		</property>
+		<property name="getAreaByCodeFunc">
+			<value>${getAreaByCodeFunc}</value>
+		</property>
+		
+		<property name="holdFunc">
+			<value>${holdFunc}</value>
+		</property>
+		<property name="outFunc">
+			<value>${outFunc}</value>
+		</property>
+		<property name="outtoholdFunc">
+			<value>${outtoholdFunc}</value>
+		</property>
+		
+		<property name="getContacterInfoByIdFunc">
+			<value>${getContacterInfoByIdFunc}</value>
+		</property>
+		<property name="addContacterInfoFunc">
+			<value>${addContacterInfoFunc}</value>
+		</property>
+		<property name="updateContacterInfoFunc">
+			<value>${updateContacterInfoFunc}</value>
+		</property>
+		<property name="delContacterInfoFunc">
+			<value>${delContacterInfoFunc}</value>
+		</property>
+		<property name="webRestfulApiUrl">
+			<value>${webRestfulApiUrl}</value>
+		</property>
+		<property name="webOrderModule">
+			<value>${webOrderModule}</value>
+		</property>
+		<property name="webRetailOrderFunc">
+			<value>${webRetailOrderFunc}</value>
+		</property>
+
+        <property name="clientSmsRestUrl">
+            <value>${clientSmsRestUrl}</value>
+        </property>
+        <property name="clientEmailRestUrl">
+            <value>${clientEmailRestUrl}</value>
+        </property>
+        
+        <property name="queryAdditionalDetailUrl">
+            <value>${queryAdditionalDetailUrl}</value>
+        </property>
+        
+        <property name="queryDivDetailUrl">
+            <value>${queryDivDetailUrl}</value>
+        </property>
+        
+        <property name="agencyRestfulApiUrl">
+            <value>${agencyRestfulApiUrl}</value>
+        </property>
+        <property name="agencyModule">
+            <value>${agencyModule}</value>
+        </property>
+        <property name="agencyQueryFunc">
+            <value>${agencyQueryFunc}</value>
+        </property>
+        
+        <property name="weChatRestfulApiUrl">
+            <value>${weChatRestfulApiUrl}</value>
+        </property>
+        <property name="weChatModule">
+            <value>${weChatModule}</value>
+        </property>
+        <property name="sendWeChatFunc">
+            <value>${sendWeChatFunc}</value>
+        </property>
+        
+        <property name="pgaRestfulApiUrl">
+            <value>${pgaRestfulApiUrl}</value>
+        </property>
+        <property name="orderModule">
+            <value>${orderModule}</value>
+        </property>
+        <property name="syncOrderInfoFunc">
+            <value>${syncOrderInfoFunc}</value>
+        </property>
+        <property name="syncOrderStautsFunc">
+            <value>${syncOrderStautsFunc}</value>
+        </property>
+        <property name="syncOrderStautsBatchFunc">
+            <value>${syncOrderStautsBatchFunc}</value>
+        </property>
+	</bean>
+-->	
+</beans>
