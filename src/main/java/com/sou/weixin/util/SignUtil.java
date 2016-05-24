@@ -1,4 +1,4 @@
-package com.sou.common.util;
+package com.sou.weixin.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * 请求校验工具类
  * 
- * @author liufeng
+ * @author 
  * @date 2013-09-01
  */
 public class SignUtil {

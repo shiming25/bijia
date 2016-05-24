@@ -1,4 +1,4 @@
-package com.sou.servlet;
+package com.sou.weixin.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sou.common.util.SignUtil;
+import com.sou.weixin.service.CoreService;
+import com.sou.weixin.util.SignUtil;
 
 /**
  * 请求处理的核心类
@@ -45,6 +46,23 @@ public class CoreServlet extends HttpServlet {
 	 * 处理微信服务器发来的消息
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO 消息的接收、处理、响应
+		// 将请求、响应的编码均设置为UTF-8（防止中文乱码）
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+
+		// 接收参数微信加密签名、 时间戳、随机数
+		String signature = request.getParameter("signature");
+		String timestamp = request.getParameter("timestamp");
+		String nonce = request.getParameter("nonce");
+
+		PrintWriter out = response.getWriter();
+		// 请求校验
+		if (SignUtil.checkSignature(signature, timestamp, nonce)) {
+			// 调用核心服务类接收处理请求
+			String respXml = CoreService.processRequest(request);
+			out.print(respXml);
+		}
+		out.close();
+		out = null;
 	}
 }
