@@ -97,9 +97,9 @@ public class MenuManager {
 
 	public static void main(String[] args) {
 		// 第三方用户唯一凭证
-		String appId = "wx195c6735b4eddac1";
+		String appId = "wx0702bf3d53619c62";
 		// 第三方用户唯一凭证密钥
-		String appSecret = "29143ea2dd8336f8475054cfba9c1cc1";
+		String appSecret = "f4aaa4eab33d092c00c10912b3f3ef02";
 
 		// 调用接口获取凭证
 		Token token = CommonUtil.getToken(appId, appSecret);
