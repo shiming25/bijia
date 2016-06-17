@@ -24,6 +24,7 @@ public class CoreServlet extends HttpServlet {
 	 * 请求校验（确认请求来自微信服务器）
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    System.out.println("=====doGet======");
 		// 微信加密签名
 		String signature = request.getParameter("signature");
 		// 时间戳
@@ -36,6 +37,7 @@ public class CoreServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		// 请求校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
 		if (SignUtil.checkSignature(signature, timestamp, nonce)) {
+		    System.out.println("=====checkSignature======");
 			out.print(echostr);
 		}
 		out.close();
@@ -46,6 +48,7 @@ public class CoreServlet extends HttpServlet {
 	 * 处理微信服务器发来的消息
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    System.out.println("=====doPost======");
 		// 将请求、响应的编码均设置为UTF-8（防止中文乱码）
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
