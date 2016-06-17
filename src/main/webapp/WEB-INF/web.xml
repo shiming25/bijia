@@ -46,7 +46,7 @@
 
     <servlet>
         <servlet-name>weixinServlet</servlet-name>
-        <servlet-class>com.sou.weixin.servlet.CoreServlet</servlet-class>
+        <servlet-class>com.bijia.weixin.servlet.WeixinServlet</servlet-class>
 
     </servlet>
     <servlet-mapping>
