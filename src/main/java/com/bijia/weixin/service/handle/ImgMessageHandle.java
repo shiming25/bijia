@@ -21,6 +21,9 @@ import com.github.sd4324530.fastweixin.message.req.ReqType;
  */
 public class ImgMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> {
 
+    /**
+     * 日志
+     */
     public static final Logger log = LoggerFactory.getLogger(ImgMessageHandle.class);
     
     @Override
