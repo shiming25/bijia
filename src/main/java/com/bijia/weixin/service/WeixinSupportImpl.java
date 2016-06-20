@@ -30,6 +30,6 @@ public class WeixinSupportImpl extends WeixinSupport{
     protected BaseMsg handleTextMsg(TextReqMsg msg) {
         String content = msg.getContent();
         log.debug("用户发送到服务器的内容:{}", content);
-        return new TextMsg("您好!");
+        return new TextMsg("机器人回复消息，您好!");
     }
 }
