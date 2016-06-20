@@ -1,10 +1,16 @@
 package com.bijia.weixin.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bijia.weixin.service.handle.TextMessageHandle;
+import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
 import com.github.sd4324530.fastweixin.message.TextMsg;
+import com.github.sd4324530.fastweixin.message.req.BaseReqMsg;
 import com.github.sd4324530.fastweixin.message.req.TextReqMsg;
 import com.github.sd4324530.fastweixin.servlet.WeixinSupport;
 
@@ -26,10 +32,17 @@ public class WeixinSupportImpl extends WeixinSupport{
         return TOKEN;
     }
     //重写父类方法，处理对应的微信消息
+//    @Override
+//    protected BaseMsg handleTextMsg(TextReqMsg msg) {
+//        String content = msg.getContent();
+//        log.debug("用户发送到服务器的内容:{}", content);
+//        return new TextMsg("机器人回复消息，您好!");
+//    }
+    
     @Override
-    protected BaseMsg handleTextMsg(TextReqMsg msg) {
-        String content = msg.getContent();
-        log.debug("用户发送到服务器的内容:{}", content);
-        return new TextMsg("机器人回复消息，您好!");
+    protected List<MessageHandle> initMessageHandles() {
+            List<MessageHandle> handles = new ArrayList<MessageHandle>();
+            handles.add(new TextMessageHandle());
+            return handles;
     }
 }
