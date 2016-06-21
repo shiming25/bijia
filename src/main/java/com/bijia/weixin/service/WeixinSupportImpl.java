@@ -7,7 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bijia.weixin.service.handle.ImgMessageHandle;
+import com.bijia.weixin.service.handle.LinkMessageHandle;
+import com.bijia.weixin.service.handle.LocationMessageHandle;
+import com.bijia.weixin.service.handle.ShortVideoMessageHandle;
 import com.bijia.weixin.service.handle.TextMessageHandle;
+import com.bijia.weixin.service.handle.VideoMessageHandle;
+import com.bijia.weixin.service.handle.VoiceMessageHandle;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.servlet.WeixinSupport;
 
@@ -41,6 +46,11 @@ public class WeixinSupportImpl extends WeixinSupport{
             List<MessageHandle> handles = new ArrayList<MessageHandle>();
             handles.add(new TextMessageHandle());
             handles.add(new ImgMessageHandle());
+            handles.add(new LinkMessageHandle());
+            handles.add(new LocationMessageHandle());
+            handles.add(new ShortVideoMessageHandle());
+            handles.add(new VideoMessageHandle());
+            handles.add(new VoiceMessageHandle());
             return handles;
     }
 }
