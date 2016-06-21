@@ -51,7 +51,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
             return new TextMsg("周边饭店");
         }
         
-        return new TextMsg("看不懂，说人话：\n"+helpStr);
+        return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n"+helpStr);
     }
 
     @Override
