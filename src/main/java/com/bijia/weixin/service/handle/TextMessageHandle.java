@@ -59,7 +59,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
        return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n"+helpStr+"\n"
                +emoji(0x1F388) +emoji(0x1F388) +emoji(0x1F388)+emoji(0x1F337)+emoji(0x1F337)+emoji(0x1F337)
                +"\n"
-               +"<a href=\"http://www.baidu.com\">了解更多</a> [baci 表情雨]");
+               +"<a href=\"http://www.baidu.com\">了解更多</a> <b>粗体</b>[baci 表情雨]");
     }
 
     @Override
