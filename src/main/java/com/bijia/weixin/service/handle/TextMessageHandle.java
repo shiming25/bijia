@@ -40,6 +40,11 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
      */
     public static final String oneMsgStr = "1,饭店";
     
+    
+    private String emoji(int codePoint) {
+        return String.valueOf(Character.toChars(codePoint));
+    }
+    
     @Override
     public BaseMsg handle(M message) {
         //输入？ ? help 帮助 其他，查询提示
@@ -51,7 +56,8 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
             return new TextMsg("周边饭店");
         }
         
-        return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n"+helpStr);
+       return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n"+helpStr+"\n"
+               +emoji(0x1F388) +emoji(0x1F388) +emoji(0x1F388)+emoji(0x1F337)+emoji(0x1F337)+emoji(0x1F337));
     }
 
     @Override
