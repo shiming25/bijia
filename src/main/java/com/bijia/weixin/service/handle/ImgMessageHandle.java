@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
-import com.github.sd4324530.fastweixin.message.TextMsg;
-import com.github.sd4324530.fastweixin.message.req.BaseReqMsg;
+import com.github.sd4324530.fastweixin.message.ImageMsg;
+import com.github.sd4324530.fastweixin.message.req.ImageReqMsg;
 import com.github.sd4324530.fastweixin.message.req.ReqType;
 
 /**
@@ -19,7 +19,7 @@ import com.github.sd4324530.fastweixin.message.req.ReqType;
  * @taskId <br>
  * @CreateDate 2016年6月17日 <br>
  */
-public class ImgMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> {
+public class ImgMessageHandle<M extends ImageReqMsg> implements MessageHandle<M> {
 
     /**
      * 日志
@@ -28,7 +28,9 @@ public class ImgMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> 
     
     @Override
     public BaseMsg handle(M message) {
-        return new TextMsg("handle回复图片消息，您好!");
+        ImageMsg imageMsg = new ImageMsg();
+        imageMsg.setMediaId("kLr6ZEZdZ58JXAE8VFsYdqkMkkQEGT5KLkQ84PpI60UclYuGKxZ9SOLQrJhS8kwx");
+        return imageMsg;
     }
     
     @Override
