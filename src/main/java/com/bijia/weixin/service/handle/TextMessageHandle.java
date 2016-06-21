@@ -4,12 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
-import com.bijia.weixin.service.WeixinSupportImpl;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
 import com.github.sd4324530.fastweixin.message.TextMsg;
-import com.github.sd4324530.fastweixin.message.req.BaseReqMsg;
 import com.github.sd4324530.fastweixin.message.req.ReqType;
+import com.github.sd4324530.fastweixin.message.req.TextReqMsg;
 
 /**
  * <文本消息处理类> <br>
@@ -20,15 +19,39 @@ import com.github.sd4324530.fastweixin.message.req.ReqType;
  * @taskId <br>
  * @CreateDate 2016年6月17日 <br>
  */
-public class TextMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> {
+public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M> {
     /**
      * 日志
      */
     public static final Logger log = LoggerFactory.getLogger(TextMessageHandle.class);
 
+    /**
+     * 发送帮助消息
+     */
+    public static final String helpMsgStr = "?,？，help,帮助";
+    
+    /**
+     * 提示信息
+     */
+    public static final String helpStr = "?：帮助\n1：周边饭店\n2：周边宾馆\n3：周边停车场";
+    
+    /**
+     * 查询周边饭店
+     */
+    public static final String oneMsgStr = "1,饭店";
+    
     @Override
     public BaseMsg handle(M message) {
-        return new TextMsg("handle回复文本消息，您好!");
+        //输入？ ? help 帮助 其他，查询提示
+        if(message != null && helpMsgStr.contains(message.getContent())) {    
+            return new TextMsg(helpStr);
+        }
+        
+        if(message != null && oneMsgStr.contains(message.getContent())) {
+            return new TextMsg("周边饭店");
+        }
+        
+        return new TextMsg("看不懂，说人话：\n"+helpStr);
     }
 
     @Override
