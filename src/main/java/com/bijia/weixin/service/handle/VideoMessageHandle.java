@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
-import com.github.sd4324530.fastweixin.message.TextMsg;
-import com.github.sd4324530.fastweixin.message.req.BaseReqMsg;
+import com.github.sd4324530.fastweixin.message.VideoMsg;
 import com.github.sd4324530.fastweixin.message.req.ReqType;
+import com.github.sd4324530.fastweixin.message.req.VideoReqMsg;
 
 /**
  * <视频消息处理类> <br>
@@ -19,7 +19,7 @@ import com.github.sd4324530.fastweixin.message.req.ReqType;
  * @taskId <br>
  * @CreateDate 2016年6月17日 <br>
  */
-public class VideoMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> {
+public class VideoMessageHandle<M extends VideoReqMsg> implements MessageHandle<M> {
 
     /**
      * 日志
@@ -28,7 +28,14 @@ public class VideoMessageHandle<M extends BaseReqMsg> implements MessageHandle<M
 
     @Override
     public BaseMsg handle(M message) {
-        return new TextMsg("handle回复视频消息，您好!");
+        VideoMsg videoMsg = new VideoMsg("");
+        if(message !=null) {
+            videoMsg.setMediaId(message.getMediaId());
+            videoMsg.setTitle("视频标题");
+            videoMsg.setDescription("视频描述");
+        }
+        
+        return videoMsg;
     }
 
     @Override

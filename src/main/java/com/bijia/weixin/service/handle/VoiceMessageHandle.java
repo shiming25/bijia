@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
-import com.github.sd4324530.fastweixin.message.TextMsg;
-import com.github.sd4324530.fastweixin.message.req.BaseReqMsg;
+import com.github.sd4324530.fastweixin.message.VoiceMsg;
 import com.github.sd4324530.fastweixin.message.req.ReqType;
+import com.github.sd4324530.fastweixin.message.req.VoiceReqMsg;
 
 /**
  * <语音消息处理类> <br>
@@ -19,7 +19,7 @@ import com.github.sd4324530.fastweixin.message.req.ReqType;
  * @taskId <br>
  * @CreateDate 2016年6月17日 <br>
  */
-public class VoiceMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> {
+public class VoiceMessageHandle<M extends VoiceReqMsg> implements MessageHandle<M> {
 
     /**
      * 日志
@@ -28,7 +28,12 @@ public class VoiceMessageHandle<M extends BaseReqMsg> implements MessageHandle<M
     
     @Override
     public BaseMsg handle(M message) {
-        return new TextMsg("handle回复语音消息，您好!");
+        VoiceMsg voiceMsg = new VoiceMsg("");
+        if(message !=null) {
+             voiceMsg = new VoiceMsg(message.getMediaId());
+        }
+        
+        return voiceMsg;
     }
     
     @Override
