@@ -29,7 +29,10 @@ public class ImgMessageHandle<M extends ImageReqMsg> implements MessageHandle<M>
     @Override
     public BaseMsg handle(M message) {
         ImageMsg imageMsg = new ImageMsg();
-        imageMsg.setMediaId("kLr6ZEZdZ58JXAE8VFsYdqkMkkQEGT5KLkQ84PpI60UclYuGKxZ9SOLQrJhS8kwx");
+//        imageMsg.setMediaId("oAzOSUUKtmhULIVR_jXBVrQEWyafe2XGEuqGw9cChC8jjHND1eGR9Y2a2wYa8ry8");
+        if(message !=null) {
+            imageMsg.setMediaId(message.getMediaId());
+        }
         return imageMsg;
     }
     
