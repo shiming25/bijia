@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
+import com.github.sd4324530.fastweixin.message.NewsMsg;
 import com.github.sd4324530.fastweixin.message.TextMsg;
 import com.github.sd4324530.fastweixin.message.req.ReqType;
 import com.github.sd4324530.fastweixin.message.req.TextReqMsg;
@@ -53,7 +54,12 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
         }
         
         if(message != null && oneMsgStr.contains(message.getContent())) {
-            return new TextMsg("周边饭店");
+            NewsMsg newsMsg = new NewsMsg();
+            newsMsg.add("图文标题1", "图文消息测试", "http://gd.offcn.com/dl/2016/0504/20160504025719401.jpg", "http://www.baidu.com");
+            newsMsg.add("图文标题2", "图文消息测试2", "http://p14.qhimg.com/dr/360_210_/t01704a8872a1a3c92f.jpg", "http://www.baidu.com");
+            newsMsg.add("图文标题3", "图文消息测试3", "http://www.mercedes-benz.com.cn/content/media_library/china/mpc_china/Passenger_Cars/AMG/Philosophy/360_200_Philosophy.object-Single-MEDIA.tmp/360_200_Philosophy.jpg", "http://www.baidu.com");
+            newsMsg.add("图文标题4", "图文消息测试4", "http://t-1.tuzhan.com/0875f27fe929/p-2/l/2014/02/27/17/88769d8639464ea4861378846029b774.jpg", "http://www.baidu.com");
+            return newsMsg;
         }
         
        return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n"+helpStr+"\n"
