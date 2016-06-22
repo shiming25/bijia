@@ -55,10 +55,11 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
         
         if(message != null && oneMsgStr.contains(message.getContent())) {
             NewsMsg newsMsg = new NewsMsg();
-            newsMsg.add("图文标题1", "图文消息测试", "http://gd.offcn.com/dl/2016/0504/20160504025719401.jpg", "http://www.baidu.com");
-            newsMsg.add("图文标题2", "图文消息测试2", "http://p14.qhimg.com/dr/360_210_/t01704a8872a1a3c92f.jpg", "http://www.baidu.com");
-            newsMsg.add("图文标题3", "图文消息测试3", "http://www.mercedes-benz.com.cn/content/media_library/china/mpc_china/Passenger_Cars/AMG/Philosophy/360_200_Philosophy.object-Single-MEDIA.tmp/360_200_Philosophy.jpg", "http://www.baidu.com");
-            newsMsg.add("图文标题4", "图文消息测试4", "http://t-1.tuzhan.com/0875f27fe929/p-2/l/2014/02/27/17/88769d8639464ea4861378846029b774.jpg", "http://www.baidu.com");
+            newsMsg.add("图文标题1，第一标题是大标题，其余是小标题，第一个大图片像素360*200，其余的小图片是200*200",
+                    "图文消息测试", "http://gd.offcn.com/dl/2016/0504/20160504025719401.jpg", "http://www.baidu.com");
+            newsMsg.add("图文标题2，小标题，图片像素是200*200，可以设置连接,最多10条图文。", "图文消息测试2", "http://f.hiphotos.baidu.com/baike/w%3D268/sign=1c0897d6a244ad342ebf8081e8a20c08/cf1b9d16fdfaaf517ef5b4848f5494eef01f7af2.jpg", "http://www.soso.com");
+            newsMsg.add("图文标题3", "图文消息测试3", "http://imgsrc.baidu.com/forum/w%3D580/sign=8ddfbab3632762d0803ea4b790ed0849/341a90096b63f6244f533c938744ebf81a4ca31d.jpg", "http://www.sohu.com");
+            newsMsg.add("图文标题4", "图文消息测试4", "http://wenwen.soso.com/p/20100427/20100427215230-159814054.jpg", "http://www.sina.com.cn");
             return newsMsg;
         }
         
