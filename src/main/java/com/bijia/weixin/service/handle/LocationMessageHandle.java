@@ -31,9 +31,9 @@ public class LocationMessageHandle<M extends BaseReqMsg> implements MessageHandl
         MusicMsg musicMsg = new MusicMsg("");
         if(message !=null) {
 
-            musicMsg.setHqMusicUrl("http://so1.111ttt.com:8282/2016/5/06/22/199220610338.mp3?tflag=1466557886&pin=bbace1fd87ad857652bc0013db75f8e4&ip=180.100.223.13#.mp3");
-            musicMsg.setMusicUrl("http://so1.111ttt.com:8282/2016/5/06/22/199220610338.mp3?tflag=1466557886&pin=bbace1fd87ad857652bc0013db75f8e4&ip=180.100.223.13#.mp3");
-            musicMsg.setThumbMediaId("oAzOSUUKtmhULIVR_jXBVrQEWyafe2XGEuqGw9cChC8jjHND1eGR9Y2a2wYa8ry8");
+            musicMsg.setHqMusicUrl("http://wwww.baidu.com");
+            musicMsg.setMusicUrl("http://www.baidu.com");
+            musicMsg.setThumbMediaId("XjZ8UCsM5r3D3hMyxfo7kNtaa_L21QvCCo1YQLTbsPrn_jcBecyGgIvxjArONTZr");
             musicMsg.setTitle("testTitle");
             musicMsg.setDescription("testDesc");
         }
