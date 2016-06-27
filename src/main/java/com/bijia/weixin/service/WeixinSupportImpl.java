@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bijia.weixin.service.handle.event.SubscribeEventHandle;
+import com.bijia.weixin.service.handle.event.UnsubscribeEventHandle;
 import com.bijia.weixin.service.handle.message.ImgMessageHandle;
 import com.bijia.weixin.service.handle.message.LinkMessageHandle;
 import com.bijia.weixin.service.handle.message.LocationMessageHandle;
@@ -13,7 +15,10 @@ import com.bijia.weixin.service.handle.message.ShortVideoMessageHandle;
 import com.bijia.weixin.service.handle.message.TextMessageHandle;
 import com.bijia.weixin.service.handle.message.VideoMessageHandle;
 import com.bijia.weixin.service.handle.message.VoiceMessageHandle;
+import com.github.sd4324530.fastweixin.handle.EventHandle;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
+import com.github.sd4324530.fastweixin.message.BaseMsg;
+import com.github.sd4324530.fastweixin.message.req.BaseEvent;
 import com.github.sd4324530.fastweixin.servlet.WeixinSupport;
 
 /**
@@ -52,5 +57,18 @@ public class WeixinSupportImpl extends WeixinSupport{
             handles.add(new VideoMessageHandle());
             handles.add(new VoiceMessageHandle());
             return handles;
+    }
+    
+    @Override
+    protected List<EventHandle> initEventHandles() {
+        List<EventHandle> handles = new ArrayList<EventHandle>();
+        handles.add(new SubscribeEventHandle());
+        handles.add(new UnsubscribeEventHandle());
+        return handles;
+    }
+    
+    @Override
+    protected BaseMsg handleSubscribe(BaseEvent event) {
+        return null;
     }
 }
