@@ -1,4 +1,4 @@
-package com.bijia.weixin.service.handle;
+package com.bijia.weixin.service.handle.message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
