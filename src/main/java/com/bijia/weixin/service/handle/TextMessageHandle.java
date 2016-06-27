@@ -52,7 +52,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
         if(message != null && helpMsgStr.contains(message.getContent())) {    
             return new TextMsg(helpStr);
         }
-        
+        //输入1，显示图文消息
         if(message != null && oneMsgStr.contains(message.getContent())) {
             NewsMsg newsMsg = new NewsMsg();
             newsMsg.add("图文标题1，第一标题是大标题，其余是小标题，第一个大图片像素360*200，其余的小图片是200*200",
