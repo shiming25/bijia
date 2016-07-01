@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bijia.weixin.constants.WeixinConstants;
 import com.github.sd4324530.fastweixin.api.MenuAPI;
 import com.github.sd4324530.fastweixin.api.config.ApiConfig;
 import com.github.sd4324530.fastweixin.api.entity.Menu;
@@ -33,15 +34,7 @@ public class MenuService {
      */
     private static final Logger LOG = LoggerFactory.getLogger(MenuService.class);
     
-    /**
-     * 第三方用户唯一凭证,即：应用ID
-     */
-    public static final String appid = "wx0702bf3d53619c62";
-    
-    /**
-     * 第三方用户唯一凭证密钥，即appsecret
-     */
-    public static final String secret = "f4aaa4eab33d092c00c10912b3f3ef02";
+
     
     /**
      * 
@@ -52,7 +45,7 @@ public class MenuService {
      */
     public void createMenuService() {
         //获取accesssTocken
-        ApiConfig config = new ApiConfig(appid, secret);
+        ApiConfig config = new ApiConfig(WeixinConstants.APPID, WeixinConstants.SECRET);
         //创建菜单
         createMenu(config);
     }
@@ -66,7 +59,7 @@ public class MenuService {
      */
     public void getMenuService() {
         //获取accesssTocken
-        ApiConfig config = new ApiConfig(appid, secret);
+        ApiConfig config = new ApiConfig(WeixinConstants.APPID, WeixinConstants.SECRET);
         //查询菜单
         MenuAPI api = new MenuAPI(config);
         GetMenuResponse response = api.getMenu();
