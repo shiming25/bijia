@@ -14,7 +14,7 @@ import com.github.sd4324530.fastweixin.message.req.EventType;
 import com.github.sd4324530.fastweixin.message.req.MenuEvent;
 
 /**
- * <关注事件处理类> <br>
+ * <菜单view事件处理类> <br>
  * 
  * @author shi.ming<br>
  * @version 1.0<br>

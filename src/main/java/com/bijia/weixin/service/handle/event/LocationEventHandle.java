@@ -14,7 +14,7 @@ import com.github.sd4324530.fastweixin.message.req.EventType;
 import com.github.sd4324530.fastweixin.message.req.LocationEvent;
 
 /**
- * <关注事件处理类> <br>
+ * <上报地理位置事件处理类> <br>
  * 
  * @author shi.ming<br>
  * @version 1.0<br>
