@@ -36,7 +36,7 @@ public class LocationEventHandle<E extends LocationEvent> implements EventHandle
     @Override
     public BaseMsg handle(E event) {
         return new TextMsg("地理位置信息/:B-)/:B-)：\n"
-                + "纬度：" + event.getLatitude() + "经度：" + event.getLongitude() + "精度：" + event.getPrecision()
+                + "纬度：" + event.getLatitude() + "经度：" + event.getLongitude() + "精度：" + event.getPrecision()+ "\n"
                 + helpStr + "\n"
                 + emoji(0x1F388) + emoji(0x1F388) + emoji(0x1F388) + emoji(0x1F337) + emoji(0x1F337) + emoji(0x1F337)
                 + "\n"
