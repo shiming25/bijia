@@ -1,4 +1,4 @@
-package com.bijia.weixin.service.qrcode;
+package com.bijia.weixin.service.material;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,7 +21,6 @@ import com.github.sd4324530.fastweixin.api.enums.MediaType;
 import com.github.sd4324530.fastweixin.api.response.DownloadMaterialResponse;
 import com.github.sd4324530.fastweixin.api.response.GetMaterialListResponse;
 import com.github.sd4324530.fastweixin.api.response.GetMaterialTotalCountResponse;
-import com.github.sd4324530.fastweixin.api.response.UploadImgResponse;
 import com.github.sd4324530.fastweixin.api.response.UploadMaterialResponse;
 import com.github.sd4324530.fastweixin.api.response.UploadMediaResponse;
 
@@ -33,28 +32,28 @@ import com.github.sd4324530.fastweixin.api.response.UploadMediaResponse;
  * @taskId <br>
  * @CreateDate 2016年7月1日 <br>
  */
-public class SendAllServiceImpl {
+public class MaterialServiceImpl {
 
     /**
      * 日志
      */
-    private static final Logger LOG = LoggerFactory.getLogger(SendAllServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MaterialServiceImpl.class);
 
     /**
-     * Description: 上传图文消息内的图片获取URL 本接口所上传的图片不占用公众号的素材库中图片数量的5000个的限制<br>
+     * Description: 新建图片素材接口<br>
      * 
      * @author shi.ming<br>
      * @taskId <br>
      * <br>
      */
-    public void uploadImgService() {
+    public void uploadMaterialFileService() {
         // 获取accesssTocken
         ApiConfig config = new ApiConfig(WeixinConstants.APPID, WeixinConstants.SECRET);
         // 上传
-        MediaAPI api = new MediaAPI(config);
-        File file = new File("e:/temp/test/p1.png");
-        UploadImgResponse response = api.uploadImg(file);
-        LOG.debug("上传图文消息内的图片接口:{}", response.toJsonString());
+        MaterialAPI api = new MaterialAPI(config);
+        File file = new File("e:/temp/test.jpg");
+        UploadMaterialResponse response = api.uploadMaterialFile(file);
+        LOG.debug("永久素材接口:{}", response.toJsonString());
     }
 
     /**
@@ -216,7 +215,7 @@ public class SendAllServiceImpl {
      * @param args <br>
      */
     public static void main(String[] args) {
-        SendAllServiceImpl serviceImpl = new SendAllServiceImpl();
+        MaterialServiceImpl serviceImpl = new MaterialServiceImpl();
         // serviceImpl.uploadMaterialFileService();
         // serviceImpl.uploadMaterialVoiceService();
         // serviceImpl.uploadMaterialVedioService();
@@ -225,6 +224,6 @@ public class SendAllServiceImpl {
         // serviceImpl.countMaterialService();
         // serviceImpl.batchGetMaterialService();
         // serviceImpl.deleteMaterialService();
-        serviceImpl.uploadImgService();
+        serviceImpl.uploadTempMediaService();
     }
 }
