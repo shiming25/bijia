@@ -21,6 +21,7 @@ import com.github.sd4324530.fastweixin.api.enums.MediaType;
 import com.github.sd4324530.fastweixin.api.response.DownloadMaterialResponse;
 import com.github.sd4324530.fastweixin.api.response.GetMaterialListResponse;
 import com.github.sd4324530.fastweixin.api.response.GetMaterialTotalCountResponse;
+import com.github.sd4324530.fastweixin.api.response.UploadImgResponse;
 import com.github.sd4324530.fastweixin.api.response.UploadMaterialResponse;
 import com.github.sd4324530.fastweixin.api.response.UploadMediaResponse;
 
@@ -32,28 +33,28 @@ import com.github.sd4324530.fastweixin.api.response.UploadMediaResponse;
  * @taskId <br>
  * @CreateDate 2016年7月1日 <br>
  */
-public class MaterialServiceImpl {
+public class SendAllServiceImpl {
 
     /**
      * 日志
      */
-    private static final Logger LOG = LoggerFactory.getLogger(MaterialServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SendAllServiceImpl.class);
 
     /**
-     * Description: 新建图片素材接口<br>
+     * Description: 上传图文消息内的图片获取URL 本接口所上传的图片不占用公众号的素材库中图片数量的5000个的限制<br>
      * 
      * @author shi.ming<br>
      * @taskId <br>
      * <br>
      */
-    public void uploadMaterialFileService() {
+    public void uploadImgService() {
         // 获取accesssTocken
         ApiConfig config = new ApiConfig(WeixinConstants.APPID, WeixinConstants.SECRET);
         // 上传
-        MaterialAPI api = new MaterialAPI(config);
-        File file = new File("e:/temp/test.jpg");
-        UploadMaterialResponse response = api.uploadMaterialFile(file);
-        LOG.debug("永久素材接口:{}", response.toJsonString());
+        MediaAPI api = new MediaAPI(config);
+        File file = new File("e:/temp/test/p1.png");
+        UploadImgResponse response = api.uploadImg(file);
+        LOG.debug("上传图文消息内的图片接口:{}", response.toJsonString());
     }
 
     /**
@@ -215,7 +216,7 @@ public class MaterialServiceImpl {
      * @param args <br>
      */
     public static void main(String[] args) {
-        MaterialServiceImpl serviceImpl = new MaterialServiceImpl();
+        SendAllServiceImpl serviceImpl = new SendAllServiceImpl();
         // serviceImpl.uploadMaterialFileService();
         // serviceImpl.uploadMaterialVoiceService();
         // serviceImpl.uploadMaterialVedioService();
@@ -224,6 +225,6 @@ public class MaterialServiceImpl {
         // serviceImpl.countMaterialService();
         // serviceImpl.batchGetMaterialService();
         // serviceImpl.deleteMaterialService();
-        serviceImpl.uploadTempMediaService();
+        serviceImpl.uploadImgService();
     }
 }
