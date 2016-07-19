@@ -13,7 +13,7 @@
   	
     <!-- 设置使用注解的类所在的jar包 此处主要配置@Controller注解所在的位置-->  
     <!-- 自动扫描且只扫描@Controller -->
-    <context:component-scan base-package="com.sou.*" use-default-filters="false">   
+    <context:component-scan base-package="com.sou.*,com.bijia.*" use-default-filters="false">   
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />  
    </context:component-scan>   
   
