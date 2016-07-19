@@ -87,7 +87,7 @@ public class OauthServiceImpl {
         // serviceImpl.getTokenService("021EksC01I32LL1d9NC01pJqC01EksCl");
         // serviceImpl
         // .refreshTokenService("GPrAw6DBydLdyaZMlQDWktrYFfDKXhKVe_tLkeL1EiJ5I0KizL0dQGYujhVQn0f9SpLjV6FaQyI_Z-Q6vsKiDl1nUVAyk8XUi-nhmIV4Vfo");
-        serviceImpl.getUserInfoService("sjr1vFL3CkkCxCAV6OthjfeZAbwC1Rjn9azvR8q6kAXphPnroup4g3zEMVXr5rOYCmWkMIwenak48zV9IeOukdz8_rw2Cz42kghLAz1Z-_w",
-                "o5cJLxMO--ve-tjLy6JbQBxam-ts");
+//        serviceImpl.getUserInfoService("sjr1vFL3CkkCxCAV6OthjfeZAbwC1Rjn9azvR8q6kAXphPnroup4g3zEMVXr5rOYCmWkMIwenak48zV9IeOukdz8_rw2Cz42kghLAz1Z-_w",
+//                "o5cJLxMO--ve-tjLy6JbQBxam-ts");
     }
 }
