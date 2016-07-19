@@ -454,10 +454,24 @@
 		<dependency>
 			<groupId>com.github.sd4324530</groupId>
 			<artifactId>fastweixin</artifactId>
-			<version>1.3.11-SNAPSHOT</version>
+			<version>1.3.11x-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>
+	
+	<distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://221.228.17.139:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>http://221.228.17.139:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
 	<build>
 		<finalName>tour</finalName>
 		<plugins>
