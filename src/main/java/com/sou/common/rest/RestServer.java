@@ -31,7 +31,7 @@ public class RestServer {
 		if (null == ret) {
 			return null;
 		}
-
+		
 		return RestCodec.decodeData(ret);
 	}
 
