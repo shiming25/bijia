@@ -186,7 +186,7 @@ public class BaseController {
 	public String getData(HttpServletRequest request,
 			HttpServletResponse response) throws RestException {
 		String ret =  RestUtil.getData(request, response);
-		ret = cleanXSS(ret);
+//		ret = cleanXSS(ret);
 		return ret;
 	}
 

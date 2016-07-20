@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bijia.weixin.service.oauth.OauthServiceImpl;
+import com.github.sd4324530.fastweixin.api.response.GetUserInfoResponse;
 import com.github.sd4324530.fastweixin.api.response.OauthGetTokenResponse;
 import com.sou.common.base.BaseController;
 import com.sou.common.exception.BaseAppException;
@@ -28,9 +29,8 @@ public class OauthController extends BaseController {
     }
 
     /**
+     * Description: 获取token<br>
      * 
-     * Description: 获取token<br> 
-     *  
      * @author shi.ming<br>
      * @taskId <br>
      * @param model
@@ -38,7 +38,7 @@ public class OauthController extends BaseController {
      * @param response
      * @throws BaseAppException <br>
      */
-    @RequestMapping(value = "/token", method = RequestMethod.GET)
+    @RequestMapping(value = "/token", method = RequestMethod.POST)
     @ResponseBody
     public void getToken(Model model, HttpServletRequest request,
             HttpServletResponse response) throws BaseAppException {
@@ -49,6 +49,8 @@ public class OauthController extends BaseController {
         OauthServiceImpl serviceImpl = new OauthServiceImpl();
         OauthGetTokenResponse resultObj = serviceImpl.getTokenService(code);
 
-        sendSuccessDataAsBase64(response, resultObj);
+        GetUserInfoResponse getUserInfoResponse = serviceImpl.getUserInfoService(resultObj.getAccessToken(), resultObj.getOpenid());
+
+        sendData(response, getUserInfoResponse);
     }
 }
