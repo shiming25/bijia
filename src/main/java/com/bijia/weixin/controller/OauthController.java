@@ -38,7 +38,7 @@ public class OauthController extends BaseController {
      * @param response
      * @throws BaseAppException <br>
      */
-    @RequestMapping(value = "/token", method = RequestMethod.POST)
+    @RequestMapping(value = "/token", method = RequestMethod.GET)
     @ResponseBody
     public void getToken(Model model, HttpServletRequest request,
             HttpServletResponse response) throws BaseAppException {
