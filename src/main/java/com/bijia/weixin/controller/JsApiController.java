@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,16 +13,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bijia.weixin.service.js.JsApiServiceImpl;
 import com.github.sd4324530.fastweixin.api.response.GetSignatureResponse;
-import com.github.sd4324530.fastweixin.api.response.GetUserInfoResponse;
 import com.sou.common.base.BaseController;
 import com.sou.common.exception.BaseAppException;
-import com.sou.match.service.ICrawTaobaoPage;
 
 @Controller
 @RequestMapping("/jsapi")
 public class JsApiController extends BaseController {
-    @Autowired
-    ICrawTaobaoPage iCrawTaobaoPage;
     static {
         System.out.println("bbbbbbbb");
     }

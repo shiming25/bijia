@@ -52,7 +52,7 @@ public class JsApiServiceImpl {
      */
     public GetSignatureResponse getJsApiSignService(String nonceStr, long timestame, String url) {
         // 获取accesssTocken
-        ApiConfig config = new ApiConfig(WeixinConstants.APPID, WeixinConstants.SECRET);
+        ApiConfig config = new ApiConfig(WeixinConstants.APPID, WeixinConstants.SECRET, true);
 
         JsAPI jsAPI = new JsAPI(config);
         GetSignatureResponse response = jsAPI.getSignature(nonceStr, timestame, url);
@@ -72,7 +72,7 @@ public class JsApiServiceImpl {
 
         // serviceImpl.getJsApiSignService();
         serviceImpl.getJsApiSignService("a8fa276699ed4c3db5cb7cd886e099e6", 1469068295,
-                "http://www.xuntj.com");
+                "http://www.xuntj.com/test/jssdkdemo.html");
 
     }
 }

@@ -100,6 +100,13 @@ public class MenuService {
         sub0.setName("首页");
         sub0.setType(MenuType.VIEW);
         sub0.setUrl("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0702bf3d53619c62&redirect_uri=http://www.xuntj.com/test/index2.html&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect");
+
+        MenuButton subTest = new MenuButton();
+        subTest.setKey("bijiaSubTest");
+        subTest.setName("测试jssdk");
+        subTest.setType(MenuType.VIEW);
+        subTest.setUrl("http://www.xuntj.com/test/jssdkdemo.html");
+        
         
         MenuButton sub1 = new MenuButton();
         sub1.setKey("bijiaSubTaobao");
@@ -117,6 +124,7 @@ public class MenuService {
 
         List<MenuButton> listBijia = new ArrayList<MenuButton>();
         listBijia.add(sub0);
+        listBijia.add(subTest);
         listBijia.add(sub1);
         listBijia.add(sub2);
         listBijia.add(sub3);
