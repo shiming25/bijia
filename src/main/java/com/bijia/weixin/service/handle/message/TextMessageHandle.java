@@ -63,46 +63,46 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
         if (message != null && fujinStr.equals(message.getContent())) {
             return new TextMsg(getUsage());
         }
-        
-        //附近查询
+
+        // 附近查询
         if (message != null && message.getContent().startsWith(fujinStr)) {
-            String keyWord = message.getContent().replaceAll(fujinStr, "").trim();
-            // 获取用户最后一次发送的地理位置
-            // UserLocation location = MySQLUtil.getLastLocation(request, fromUserName);
-
-            JSONObject jsonObj = new JSONObject();
-            jsonObj.put("openId", message.getFromUserName());
-            DBObject dbobj = mongoUtil.queryLastDetail(jsonObj, "userLocation");
-            UserLocation location = JSONObject.parseObject(dbobj.toString(), UserLocation.class);
-            if (null == location) {
-                return new TextMsg(getUsage());
-            }
-
-            // 根据转换后（纠偏）的坐标搜索周边POI
             try {
+                String keyWord = message.getContent().replaceAll(fujinStr, "").trim();
+                // 获取用户最后一次发送的地理位置
+                // UserLocation location = MySQLUtil.getLastLocation(request, fromUserName);
+                log.debug("begin 附近查询");
+                JSONObject jsonObj = new JSONObject();
+                jsonObj.put("openId", message.getFromUserName());
+                DBObject dbobj = mongoUtil.queryLastDetail(jsonObj, "userLocation");
+                UserLocation location = JSONObject.parseObject(dbobj.toString(), UserLocation.class);
+                if (null == location) {
+                    return new TextMsg(getUsage());
+                }
+                log.debug("begin2 附近查询");
+                // 根据转换后（纠偏）的坐标搜索周边POI
+
                 List<BaiduPlace> placeList = BaiduMapUtil.searchPlace(keyWord, location.getBd09Lng(), location.getBd09Lat());
                 if (null == placeList || 0 == placeList.size()) {
                     respContent = String.format("/难过，您发送的位置附近未搜索到“%s”信息！", keyWord);
                     return new TextMsg(respContent);
                 }
-                
+                log.debug("begin3 附近查询");
                 List<Article> articleList = BaiduMapUtil.makeArticleList(placeList, location.getBd09Lng(), location.getBd09Lat());
                 NewsMsg newsMsg = new NewsMsg();
-                for(Article art:articleList) {
-                    newsMsg.add(art.getTitle(),art.getDescription(),art.getPicUrl(),art.getUrl());
+                for (Article art : articleList) {
+                    newsMsg.add(art.getTitle(), art.getDescription(), art.getPicUrl(), art.getUrl());
                 }
+                log.debug("begin4 附近查询");
                 return newsMsg;
-                
+
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("附近查询" + e.getMessage() + "-" + e.getCause() + "-" + e.getStackTrace());
             }
             // 未搜索到POI
 
             return new TextMsg(getUsage());
         }
 
-        
         // 输入？ ? help 帮助 其他，查询提示
         if (message != null && helpMsgStr.contains(message.getContent())) {
             return new TextMsg(helpStr);
