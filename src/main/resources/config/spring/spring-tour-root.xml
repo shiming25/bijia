@@ -16,8 +16,11 @@
             location="classpath:config/dev/application.properties"
             ignore-unresolvable="true" />
    -->
-
+ 
  <import resource="spring-mongodb-context.xml" />
+     <!-- ApplicationContext帮助类 -->
+    <bean id="springContextHelper" class="com.sou.common.util.SpringContextHelper">
+    </bean>
     <!-- 添加使用注解依赖的配置 -->
     <context:annotation-config />
 

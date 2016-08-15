@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.sd4324530.fastweixin.handle.MessageHandle;
 import com.github.sd4324530.fastweixin.message.BaseMsg;
 import com.github.sd4324530.fastweixin.message.MusicMsg;
-import com.github.sd4324530.fastweixin.message.req.BaseReqMsg;
+import com.github.sd4324530.fastweixin.message.req.LocationReqMsg;
 import com.github.sd4324530.fastweixin.message.req.ReqType;
 
 /**
@@ -19,7 +19,7 @@ import com.github.sd4324530.fastweixin.message.req.ReqType;
  * @taskId <br>
  * @CreateDate 2016年6月17日 <br>
  */
-public class LocationMessageHandle<M extends BaseReqMsg> implements MessageHandle<M> {
+public class LocationMessageHandle<M extends LocationReqMsg> implements MessageHandle<M> {
 
     /**
      * 日志
