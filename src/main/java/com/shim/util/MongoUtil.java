@@ -118,9 +118,9 @@ public class MongoUtil {
     
     public DBObject queryLastDetail(JSONObject jsonObject, String collectionName) {
         String id = jsonObject.getString("id");
-        String openId = jsonObject.getString("openId");
+        String fromUserName = jsonObject.getString("fromUserName");
         BasicDBList a = new BasicDBList();
-        DBObject queryObject = new BasicDBObject("openId", openId);
+        DBObject queryObject = new BasicDBObject("fromUserName", fromUserName);
         a.add(queryObject);
 
         if (!StringUtil.isBlank(id)) {
