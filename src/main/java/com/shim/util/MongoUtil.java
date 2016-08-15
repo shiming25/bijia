@@ -30,7 +30,7 @@ public class MongoUtil {
 
     MongoTemplate mongoTemplate = (MongoTemplate) SpringContextHelper.getBean("mongoTemplate");
 
-    public JSONObject  add(String businessContent, String colletionName) {
+    public JSONObject add(String businessContent, String colletionName) {
         try {
             JSONObject jsonObj = JSON.parseObject(businessContent);
 
@@ -115,7 +115,7 @@ public class MongoUtil {
 
         return list;
     }
-    
+
     public DBObject queryLastDetail(JSONObject jsonObject, String collectionName) {
         String id = jsonObject.getString("id");
         String fromUserName = jsonObject.getString("fromUserName");
@@ -131,24 +131,24 @@ public class MongoUtil {
         DBObject queryObjectAll = new BasicDBObject("$and", a);
         Query query = new BasicQuery(queryObjectAll);
         query.with(new Sort(new Order(Direction.DESC, "createTime")));
-       DBObject dbObj = mongoTemplate.findOne(query, DBObject.class, collectionName);
-       
+        DBObject dbObj = mongoTemplate.findOne(query, DBObject.class, collectionName);
+
         return dbObj;
-    }    
+    }
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = null;
         context = new ClassPathXmlApplicationContext("config/spring/spring-tour-root.xml");
         MongoUtil testMon = new MongoUtil();
         JSONObject json = new JSONObject();
-        json.put("openId", "test");
+        json.put("fromUserName", "o5cJLxMO--ve-tjLy6JbQBxam-ts");
         json.put("ltn", 7113);
         json.put("rtn", 7214);
         json.put("createTime", System.currentTimeMillis());
-        testMon.add(json, "mapTest");
-        
-        DBObject ret = testMon.queryLastDetail(json, "mapTest");
+        // testMon.add(json, "mapTest");
+
+        DBObject ret = testMon.queryLastDetail(json, "userLocation");
         System.out.println(ret.toString());
-        
+
     }
 }

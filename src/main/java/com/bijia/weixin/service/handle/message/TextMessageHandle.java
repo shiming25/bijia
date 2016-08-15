@@ -71,10 +71,11 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
                 String keyWord = message.getContent().replaceAll(fujinStr, "").trim();
                 // 获取用户最后一次发送的地理位置
                 // UserLocation location = MySQLUtil.getLastLocation(request, fromUserName);
-                log.debug("begin 附近查询");
+                log.debug("begin 附近查询"+message.toString());
                 JSONObject jsonObj = new JSONObject();
-                jsonObj.put("openId", message.getFromUserName());
+                jsonObj.put("fromUserName", message.getFromUserName());
                 DBObject dbobj = mongoUtil.queryLastDetail(jsonObj, "userLocation");
+                log.debug("begin11 dbobj"+dbobj);
                 UserLocation location = JSONObject.parseObject(dbobj.toString(), UserLocation.class);
                 if (null == location) {
                     return new TextMsg(getUsage());
