@@ -2,6 +2,7 @@ package com.bijia.weixin.service.handle.message;
 
 import java.util.List;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,8 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
                 return newsMsg;
 
             } catch (Exception e) {
-                log.error("附近查询" + e.getMessage() + "-" + e.getCause() + "-" + e.getStackTrace());
+                log.error("arround query " + ExceptionUtils.getFullStackTrace(e));
+                
             }
             // 未搜索到POI
 
