@@ -30,7 +30,7 @@ public class MongoUtil {
 
     MongoTemplate mongoTemplate = (MongoTemplate) SpringContextHelper.getBean("mongoTemplate");
 
-    public JSONObject add(String businessContent, String colletionName) {
+    public JSONObject  add(String businessContent, String colletionName) {
         try {
             JSONObject jsonObj = JSON.parseObject(businessContent);
 
@@ -132,7 +132,7 @@ public class MongoUtil {
         Query query = new BasicQuery(queryObjectAll);
         query.with(new Sort(new Order(Direction.DESC, "createTime")));
        DBObject dbObj = mongoTemplate.findOne(query, DBObject.class, collectionName);
-
+       
         return dbObj;
     }    
 

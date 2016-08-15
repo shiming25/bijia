@@ -41,7 +41,7 @@ public class BaiduMapUtil {
      */
     public static List<BaiduPlace> searchPlace(String query, String lng, String lat) throws Exception {
         // 拼装请求地址
-        String requestUrl = "http://api.map.baidu.com/place/v2/search?&query=QUERY&location=LAT,LNG&radius=2000&output=xml&scope=2&page_size=10&page_num=0&ak=CA21bdecc75efc1664af5a195c30bb4e";
+        String requestUrl = "http://api.map.baidu.com/place/v2/search?&query=QUERY&location=LAT,LNG&radius=2000&output=xml&scope=2&page_size=10&page_num=0&ak=1heRD4SO3ff0ywSHUpe1TSK0BAqVIKtm";
         requestUrl = requestUrl.replace("QUERY", URLEncoder.encode(query, "UTF-8"));
         requestUrl = requestUrl.replace("LAT", lat);
         requestUrl = requestUrl.replace("LNG", lng);
