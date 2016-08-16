@@ -162,7 +162,7 @@ public class BaiduMapUtil {
      */
     public static List<Article> makeArticleList(List<BaiduPlace> placeList, String bd09Lng, String bd09Lat) {
         // 项目的根路径
-        String basePath = "http://http://www.xuntj.com/test";
+        String basePath = "http://www.xuntj.com/test";
         List<Article> list = new ArrayList<Article>();
         BaiduPlace place = null;
         for (int i = 0; i < placeList.size(); i++) {
