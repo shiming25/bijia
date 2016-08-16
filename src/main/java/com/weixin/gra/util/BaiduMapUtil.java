@@ -170,7 +170,7 @@ public class BaiduMapUtil {
             Article article = new Article();
             article.setTitle(place.getName() + "\n距离约" + place.getDistance() + "米");
             // P1表示用户发送的位置（坐标转换后），p2表示当前POI所在位置
-            article.setUrl(String.format(basePath + "route.jsp?p1=%s,%s&p2=%s,%s", bd09Lng, bd09Lat, place.getLng(), place.getLat()));
+            article.setUrl(String.format(basePath + "route.html?p1=%s,%s&p2=%s,%s", bd09Lng, bd09Lat, place.getLng(), place.getLat()));
             // 将首条图文的图片设置为大图
             if (i == 0)
                 article.setPicUrl(basePath + "images/poisearch.png");
