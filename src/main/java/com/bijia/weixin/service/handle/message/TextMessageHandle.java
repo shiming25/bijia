@@ -121,7 +121,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
 
         // 输入？ ? help 帮助 其他，查询提示
         if (message != null && helpMsgStr.contains(message.getContent())) {
-            return new TextMsg(helpStr);
+            return new TextMsg(helpStr+getUsage());
         }
         // 输入1，显示图文消息
         if (message != null && oneMsgStr.contains(message.getContent())) {
@@ -152,9 +152,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
     private static String getUsage() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("\n**周边搜索使用说明**").append("\n");
-        buffer.append("1）发送地理位置").append("\n");
-        buffer.append("点击窗口底部的“+”按钮，选择“位置”，点“发送”").append("\n");
-        buffer.append("2）指定关键词搜索").append("\n");
+        buffer.append("指定关键词搜索").append("\n");
         buffer.append("格式：附近+关键词\n例如：附近ATM、附近KTV、附近厕所");
         return buffer.toString();
     }
