@@ -152,10 +152,10 @@ public class MenuService {
         // 准备around子菜单
         MenuButton subAroundHotel = new MenuButton();
         subAroundHotel.setKey("aroundSubHotel");
-        subAroundHotel.setName("周边宾馆");
-        subAroundHotel.setType(MenuType.VIEW);
-        subAroundHotel
-                .setUrl("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxafb7b8f9457b5d50&redirect_uri=http://121.40.140.41/erhuluanzi/app/testGet&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect");
+        subAroundHotel.setName("附近宾馆");
+        subAroundHotel.setType(MenuType.CLICK);
+//        subAroundHotel
+//                .setUrl("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxafb7b8f9457b5d50&redirect_uri=http://121.40.140.41/erhuluanzi/app/testGet&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect");
         MenuButton subAroundFandian = new MenuButton();
         subAroundFandian.setKey("arroundSubFandian");
         subAroundFandian.setName("附近饭店");
@@ -166,7 +166,7 @@ public class MenuService {
         subAroundTingche.setType(MenuType.CLICK);
         MenuButton subAroundSpot = new MenuButton();
         subAroundSpot.setKey("arroundSubSpot");
-        subAroundSpot.setName("附近景点");
+        subAroundSpot.setName("附近厕所");
         subAroundSpot.setType(MenuType.CLICK);
         MenuButton subAroundJianshen = new MenuButton();
         subAroundJianshen.setKey("arroundSubJianshen");

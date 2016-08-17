@@ -56,7 +56,7 @@ public class MenuClickEventHandle<E extends MenuEvent> implements EventHandle<E>
             if (menuKey.equals("arroundSubFandian")) {
                 keyWord = "饭店";
             }
-            if (menuKey.equals("aroundSubHotel")) {
+            if (menuKey.equals("arroundSubTingche")) {
                 keyWord = "停车场";
             }
             if (menuKey.equals("arroundSubSpot")) {
@@ -138,7 +138,7 @@ public class MenuClickEventHandle<E extends MenuEvent> implements EventHandle<E>
      */
     private static String getUsage() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("\n*********周边搜索使用说明*********").append("\n");
+        buffer.append("\n**周边搜索使用说明**").append("\n");
         buffer.append("1）发送地理位置").append("\n");
         buffer.append("点击窗口底部的“+”按钮，选择“位置”，点“发送”").append("\n");
         buffer.append("2）指定关键词搜索").append("\n");

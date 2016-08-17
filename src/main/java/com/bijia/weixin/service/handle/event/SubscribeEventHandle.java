@@ -68,7 +68,7 @@ public class SubscribeEventHandle<E extends BaseEvent> implements EventHandle<E>
      */
     private static String getUsage() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("\n*********周边搜索使用说明*********").append("\n");
+        buffer.append("\n**周边搜索使用说明**").append("\n");
         buffer.append("1）发送地理位置").append("\n");
         buffer.append("点击窗口底部的“+”按钮，选择“位置”，点“发送”").append("\n");
         buffer.append("2）指定关键词搜索").append("\n");
