@@ -92,7 +92,7 @@ public class MenuService {
         MenuButton mainAround = new MenuButton();
         mainAround.setType(MenuType.CLICK);
         mainAround.setKey("aroundMenu");
-        mainAround.setName("周边生活");
+        mainAround.setName("附近");
 
         // 准备bijia子菜单
         MenuButton sub0 = new MenuButton();
@@ -158,19 +158,19 @@ public class MenuService {
                 .setUrl("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxafb7b8f9457b5d50&redirect_uri=http://121.40.140.41/erhuluanzi/app/testGet&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect");
         MenuButton subAroundFandian = new MenuButton();
         subAroundFandian.setKey("arroundSubFandian");
-        subAroundFandian.setName("周边饭店");
+        subAroundFandian.setName("附近饭店");
         subAroundFandian.setType(MenuType.CLICK);
         MenuButton subAroundTingche = new MenuButton();
         subAroundTingche.setKey("arroundSubTingche");
-        subAroundTingche.setName("周边停车场");
+        subAroundTingche.setName("附近停车场");
         subAroundTingche.setType(MenuType.CLICK);
         MenuButton subAroundSpot = new MenuButton();
         subAroundSpot.setKey("arroundSubSpot");
-        subAroundSpot.setName("周边景点");
+        subAroundSpot.setName("附近景点");
         subAroundSpot.setType(MenuType.CLICK);
         MenuButton subAroundJianshen = new MenuButton();
         subAroundJianshen.setKey("arroundSubJianshen");
-        subAroundJianshen.setName("周边KTV");
+        subAroundJianshen.setName("附近KTV");
         subAroundJianshen.setType(MenuType.CLICK);
 
         List<MenuButton> listArround = new ArrayList<MenuButton>();

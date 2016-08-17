@@ -33,7 +33,7 @@ public class SubscribeEventHandle<E extends BaseEvent> implements EventHandle<E>
     public static final String helpStr = "?：帮助\n1：周边饭店\n2：周边宾馆\n3：周边停车场";
     @Override
     public BaseMsg handle(E event) {
-        return new TextMsg("欢迎关注/:B-)/:B-)：\n"+helpStr+"\n"
+        return new TextMsg("欢迎关注/:B-)/:B-)：\n"+helpStr+getUsage()+"\n"
                 +emoji(0x1F388) +emoji(0x1F388) +emoji(0x1F388)+emoji(0x1F337)+emoji(0x1F337)+emoji(0x1F337)
                 +"\n"
                 +"<a href=\"http://www.baidu.com\">了解更多</a> [baci 表情雨]");
@@ -59,6 +59,21 @@ public class SubscribeEventHandle<E extends BaseEvent> implements EventHandle<E>
             return true;
         }
         return false;
+    }
+    
+    /**
+     * 使用说明
+     * 
+     * @return
+     */
+    private static String getUsage() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("\n*********周边搜索使用说明*********").append("\n");
+        buffer.append("1）发送地理位置").append("\n");
+        buffer.append("点击窗口底部的“+”按钮，选择“位置”，点“发送”").append("\n");
+        buffer.append("2）指定关键词搜索").append("\n");
+        buffer.append("格式：附近+关键词\n例如：附近ATM、附近KTV、附近厕所");
+        return buffer.toString();
     }
 
 }

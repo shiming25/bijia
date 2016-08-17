@@ -45,7 +45,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
     /**
      * 提示信息
      */
-    public static final String helpStr = "?：帮助\n1：周边饭店\n2：周边宾馆\n3：周边停车场";
+    public static final String helpStr = "?：帮助\n1：附近饭店\n2：附近宾馆\n3：附近停车场";
 
     /**
      * 查询周边饭店
@@ -64,18 +64,31 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
         if (message != null && fujinStr.equals(message.getContent())) {
             return new TextMsg(getUsage());
         }
+        String messageContent = "";
+        if (message != null) {
+            messageContent = message.getContent();
+            if(messageContent.equals("1")) {
+                messageContent = fujinStr+"饭店";
+            }
+            if(messageContent.equals("2")) {
+                messageContent = fujinStr+"宾馆";
+            }
+            if(messageContent.equals("3")) {
+                messageContent = fujinStr+"停车场";
+            }
+        }
 
         // 附近查询
-        if (message != null && message.getContent().startsWith(fujinStr)) {
+        if (message != null && messageContent.startsWith(fujinStr)) {
             try {
-                String keyWord = message.getContent().replaceAll(fujinStr, "").trim();
+                String keyWord = messageContent.replaceAll(fujinStr, "").trim();
                 // 获取用户最后一次发送的地理位置
                 // UserLocation location = MySQLUtil.getLastLocation(request, fromUserName);
-                log.debug("begin 附近查询"+message.toString());
+                log.debug("begin 附近查询" + message.toString());
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.put("fromUserName", message.getFromUserName());
                 DBObject dbobj = mongoUtil.queryLastDetail(jsonObj, "userLocation");
-                log.debug("begin11 dbobj"+dbobj);
+                log.debug("begin11 dbobj" + dbobj);
                 UserLocation location = JSONObject.parseObject(dbobj.toString(), UserLocation.class);
                 if (null == location) {
                     return new TextMsg(getUsage());
@@ -99,7 +112,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
 
             } catch (Exception e) {
                 log.error("arround query " + ExceptionUtils.getFullStackTrace(e));
-                
+
             }
             // 未搜索到POI
 
@@ -125,7 +138,7 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
             return newsMsg;
         }
 
-        return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n" + helpStr + "\n"
+        return new TextMsg("看不懂！/::Q/::Q ，请输入机器语/:B-)/:B-)：\n" + helpStr +getUsage()+ "\n"
                 + emoji(0x1F388) + emoji(0x1F388) + emoji(0x1F388) + emoji(0x1F337) + emoji(0x1F337) + emoji(0x1F337)
                 + "\n"
                 + "<a href=\"http://www.baidu.com\">了解更多</a> [baci 表情雨]");
@@ -138,9 +151,9 @@ public class TextMessageHandle<M extends TextReqMsg> implements MessageHandle<M>
      */
     private static String getUsage() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("周边搜索使用说明").append("\n\n");
+        buffer.append("\n*********周边搜索使用说明*********").append("\n");
         buffer.append("1）发送地理位置").append("\n");
-        buffer.append("点击窗口底部的“+”按钮，选择“位置”，点“发送”").append("\n\n");
+        buffer.append("点击窗口底部的“+”按钮，选择“位置”，点“发送”").append("\n");
         buffer.append("2）指定关键词搜索").append("\n");
         buffer.append("格式：附近+关键词\n例如：附近ATM、附近KTV、附近厕所");
         return buffer.toString();
